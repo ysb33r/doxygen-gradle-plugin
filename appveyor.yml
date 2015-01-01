@@ -7,7 +7,7 @@ build_script:
   - gradlew.bat assemble --info --no-daemon -PbintrayUserName -PbintrayApiKey
 
 test_script:
-  - gradlew.bat check --info --no-daemon -PbintrayUserName -PbintrayApiKey
+  - gradlew.bat check --info --no-daemon -PDO_NOT_RUN_DOXYGEN_EXE_TESTS=1 -PbintrayUserName -PbintrayApiKey
 
 branches:
   only:

@@ -10,8 +10,6 @@
 //
 // ============================================================================
 
-rootProject.name = 'gradle-plugins'
+rootProject.name = 'doxygen-gradle-plugin'
 
-include 'doxygen'
-//include 'a2x'
 
