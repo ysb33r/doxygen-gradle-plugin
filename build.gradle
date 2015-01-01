@@ -136,5 +136,5 @@ license {
         groovy ='DOUBLESLASH_STYLE'
     }
     ext.year = '2013-2015'
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties'])
+    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties','**/*.dox'])
 }

@@ -12,6 +12,8 @@
 // ============================================================================
 //
 
+package org.ysb33r.gradle.doxygen.impl
+
 import org.gradle.api.file.FileCollection
 
 /**
