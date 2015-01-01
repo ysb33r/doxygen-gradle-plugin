@@ -6,70 +6,135 @@ buildscript {
     }
     dependencies {
         classpath 'org.ysb33r.gradle:bintray:1.5'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
     }
 }
 
-subprojects {
-    apply plugin : 'org.ysb33r.bintray'
-    apply plugin : 'groovy'
-    apply plugin : 'maven'
-    apply plugin : 'idea'
-    apply plugin : 'artifactory'
+apply plugin : 'org.ysb33r.bintray'
+apply plugin : 'groovy'
+apply plugin : 'maven'
+apply plugin : 'com.jfrog.artifactory'
+apply plugin : 'com.github.hierynomus.license'
+import org.ysb33r.gradle.bintray.BintraySignVersion
 
 
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+group = 'org.ysb33r.gradle'
+archivesBaseName = 'doxygen'
+version = '0.2'
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
-    group = 'org.ysb33r.gradle'
+ext {
+    moduleName = 'doxygen-gradle-plugin'
+    bintrayOwner = 'ysb33r'
+    bintrayRepo = 'grysb33r'
+}
 
+repositories {
+    jcenter()
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': moduleName, 'Implementation-Version': version
+    }
+}
+
+test {
+    systemProperties 'TESTFSREADROOT'  : new File(projectDir,'src/test/resources').absolutePath
+    systemProperties 'TESTFSWRITEROOT' : new File(buildDir,'tmp/test/doxygen').absolutePath
+    systemProperties 'DOXY_TEMPLATE'   : new File(projectDir,'src/main/resources/doxyfile-template.dox').absolutePath
+
+    // Use -PDO_NOT_RUN_DOXYGEN_EXE_TESTS=1 to skip any test that requires the 'doxygen' executable
+    if(project.properties.DO_NOT_RUN_DOXYGEN_EXE_TESTS) {
+        systemProperties 'DO_NOT_RUN_DOXYGEN_EXE_TESTS' : '1'
+    }
+
+    // The location of the doxygen executable can be controlled by setting -PDOXYGEN_PATH=/path/to/doxygen
+    // on the cmd-line
+    if(project.properties.DOXYGEN_PATH) {
+        systemProperties 'DOXYGEN_PATH' : new File(project.properties.DOXYGEN_PATH).absolutePath
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    description "An archive of the JavaDocs for Maven Central"
+    classifier "javadoc"
+    from javadoc
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    testCompile ('org.spockframework:spock-core:0.7-groovy-2.0') {
+        exclude module : 'groovy-all'
+    }
+}
+
+artifactory {
+    publish {
+        contextUrl = 'http://oss.jfrog.org'
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = project.properties.bintrayUserName
+            password = project.properties.bintrayApiKey
+        }
+    }
+}
+
+artifactoryPublish {
+    onlyIf { version.endsWith("SNAPSHOT") }
+}
+
+task signArchives (type:BintraySignVersion ) {
+    username    project.properties.bintrayUserName
+    apiKey      project.properties.bintrayApiKey
+    repoOwner   bintrayOwner
+    repoName    bintrayRepo
+    packageName moduleName
+    gpgPassphrase     project.properties.bintrayGpgPassphrase
+}
+
+
+uploadArchives  {
     repositories {
-        jcenter()
-    }
-
-    ext {
-        bintrayOwner = 'ysb33r'
-        bintrayRepo = 'grysb33r'
-    }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar) {
-        description "An archive of the JavaDocs for Maven Central"
-        classifier "javadoc"
-        from javadoc
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
-    dependencies {
-        compile gradleApi()
-        compile localGroovy()
-        testCompile ('org.spockframework:spock-core:0.7-groovy-2.0') {
-            exclude module : 'groovy-all'
+        bintrayMavenDeployer {
+            username    project.properties.bintrayUserName
+            apiKey      project.properties.bintrayApiKey
+            repoOwner   bintrayOwner
+            repoName    bintrayRepo
+            packageName moduleName
+            description 'This is a plugin for Gradle that allows Doxygen (www.doxygen.org) to be used to generate documentation'
+            tags        'gradle','doxygen','documentation'
+            licenses          'Apache-2.0'
+            vcsUrl            'https://github.com/ysb33r/Gradle.git'
+            autoCreatePackage true
+            updatePackage     true
+            versionAttributes 'gradle-plugin' : "org.ysb33r.doxygen:${group}:${archivesBaseName}"
         }
     }
 
-    artifactory {
-        publish {
-            contextUrl = 'http://oss.jfrog.org'
-            repository {
-                repoKey = 'oss-snapshot-local'
-                username = project.properties.bintrayUserName
-                password = project.properties.bintrayApiKey
-            }
-        }
-    }
-
-    artifactoryPublish {
-        onlyIf { version.endsWith("SNAPSHOT") }
-    }
+    onlyIf { !version.endsWith("SNAPSHOT") }
 }
 
-
+license {
+    header = rootProject.file('config/HEADER')
+    strictCheck = true
+    ignoreFailures = false
+    mapping {
+        groovy ='DOUBLESLASH_STYLE'
+    }
+    ext.year = '2013-2015'
+    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties'])
+}
