@@ -21,7 +21,7 @@ import org.ysb33r.gradle.bintray.BintraySignVersion
 
 group = 'org.ysb33r.gradle'
 archivesBaseName = 'doxygen'
-version = '0.2'
+version = '0.3-SNAPSHOT'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
