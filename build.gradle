@@ -2,16 +2,21 @@
 buildscript {
     repositories {
         jcenter()
-	    mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
+        classpath 'org.ysb33r.gradle:vfs-gradle-plugin:1.0-beta2'
         classpath 'org.ysb33r.gradle:bintray:1.5'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
+        classpath 'commons-httpclient:commons-httpclient:3.1'
     }
 }
 
 apply plugin : 'org.ysb33r.bintray'
+apply plugin : 'org.ysb33r.vfs'
 apply plugin : 'groovy'
 apply plugin : 'maven'
 apply plugin : 'com.jfrog.artifactory'
@@ -29,6 +34,8 @@ ext {
     moduleName = 'doxygen-gradle-plugin'
     bintrayOwner = 'ysb33r'
     bintrayRepo = 'grysb33r'
+    doxygenTestVersion = '1.8.9'
+    doxygenDownloadDir = new File(buildDir,'doxygen')
 }
 
 repositories {
@@ -137,4 +144,17 @@ license {
     }
     ext.year = '2013-2015'
     excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties','**/*.dox'])
+}
+
+task downloadDoxygen << {
+    mkdir doxygenDownloadDir
+    vfs {
+        cp "zip:http://ftp.stack.nl/pub/users/dimitri/doxygen-${doxygenTestVersion}.windows.bin.zip", doxygenDownloadDir,
+            overwrite : true, recursive : true
+    }
+
+}
+
+downloadDoxygen {
+    onlyIf { System.env.APPVEYOR }
 }
