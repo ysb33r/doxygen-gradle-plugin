@@ -1,5 +1,4 @@
-Doxygen Plugin for Gradle
-=========================
+= Doxygen Plugin for Gradle
 
 [Doxygen](http://www.doxygen.org) is a popular documentation tool, especially in the C/C++ world. This plugin makes
 it possible to generate documentation for any of the ```Doxygen``` supported languages, if such projects are built with
@@ -7,15 +6,13 @@ it possible to generate documentation for any of the ```Doxygen``` supported lan
 makes it possible for Gradle builds to utilise ```Doxygen``` via ```AntBuilder```, however this plugin takes a much more 
 _gradlesque_ approach.
 
-Requirements
-------------
+== Requirements
 The plugin currently requires that the ```doxygen``` native binary be available. Any other optional binaries called by
 ```doygen``` such as ```dot``` also needs to be installed if they are required as part of the documentation build process.
 By default Gradle will use the search path to find these binaries, but it is possible to explicitly define locations
  if necessary,
  
-Synopsis
---------
+== Synopsis
 
 To bootstrap the plugin:
 
@@ -54,8 +51,7 @@ task myAwesomeDoxygenTask (type:Doxygen) {
 }
 ```
 
-Configuration
--------------
+== Configuration
 ```Doxygen``` is a [SourceTask](***) and all appropriate operations can be used. 
 
 ```groovy
@@ -116,4 +112,15 @@ part of the dependencies of the task
 * ```PROJECT_NAME``` - ```project.name``` will be used as the default value. If you want to override use ```project_name```
 * ```PROJECT_NUMBER``` - ```project.version``` will be used as the default value. If you want to override use ```project_number```
 
+== Executables
 
+Executables are configured via a special closure 
+
+```groovy
+doxygen {
+  executables {
+    dot_path '/path/to/dot'
+    hhc_location '/path/to/hhc'    
+  }
+}
+```
