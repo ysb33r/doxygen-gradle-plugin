@@ -157,7 +157,6 @@ class DoxygenTaskSpec extends spock.lang.Specification {
             Project proj = ProjectBuilder.builder().withName('DoxygenTaskSpec').build()
             proj.version  = '1.1'
             proj.buildDir = 'build/foo'
-            proj.logging.level = LogLevel.INFO
             def defdox = proj.task('doxygen', type: Doxygen )
 
 
