@@ -1,26 +1,13 @@
-
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath 'org.ysb33r.gradle:vfs-gradle-plugin:1.0-beta2'
-        classpath 'org.ysb33r.gradle:bintray:1.5'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
-        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
-        classpath 'commons-httpclient:commons-httpclient:3.1'
-    }
+plugins {
+    id 'groovy'
+    id 'maven'
+    id 'org.ysb33r.bintray' version '1.5'
+    id 'org.ysb33r.cloudci' version '1.0'
+    id 'org.ysb33r.gradletest' version '1.0-beta5'
+    id 'com.jfrog.artifactory' version '3.0.1'
+    id 'com.github.hierynomus.license' version '0.13.1'
 }
 
-apply plugin : 'org.ysb33r.bintray'
-apply plugin : 'org.ysb33r.vfs'
-apply plugin : 'groovy'
-apply plugin : 'maven'
-apply plugin : 'com.jfrog.artifactory'
-apply plugin : 'com.github.hierynomus.license'
 import org.ysb33r.gradle.bintray.BintraySignVersion
 
 
@@ -31,7 +18,7 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 ext {
-    moduleName = 'doxygen-gradle-plugin'
+    moduleName = rootProject.name
     bintrayOwner = 'ysb33r'
     bintrayRepo = 'grysb33r'
     doxygenTestVersion = '1.8.9'
@@ -117,15 +104,15 @@ task signArchives (type:BintraySignVersion ) {
 uploadArchives  {
     repositories {
         bintrayMavenDeployer {
-            username    project.properties.bintrayUserName
-            apiKey      project.properties.bintrayApiKey
-            repoOwner   bintrayOwner
-            repoName    bintrayRepo
-            packageName moduleName
-            description 'This is a plugin for Gradle that allows Doxygen (www.doxygen.org) to be used to generate documentation'
-            tags        'gradle','doxygen','documentation'
+            username          project.properties.bintrayUserName
+            apiKey            project.properties.bintrayApiKey
+            repoOwner         bintrayOwner
+            repoName          bintrayRepo
+            packageName       moduleName
+            description       'This is a plugin for Gradle that allows Doxygen (www.doxygen.org) to be used to generate documentation'
+            tags              'gradle','doxygen','documentation'
             licenses          'Apache-2.0'
-            vcsUrl            'https://github.com/ysb33r/Gradle.git'
+            vcsUrl            'https://github.com/ysb33r/doxygen-gradle-plugin.git'
             autoCreatePackage true
             updatePackage     true
             versionAttributes 'gradle-plugin' : "org.ysb33r.doxygen:${group}:${archivesBaseName}"
@@ -146,15 +133,19 @@ license {
     excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties','**/*.dox'])
 }
 
-task downloadDoxygen << {
-    mkdir doxygenDownloadDir
-    vfs {
-        cp "zip:http://ftp.stack.nl/pub/users/dimitri/doxygen-${doxygenTestVersion}.windows.bin.zip", doxygenDownloadDir,
-            overwrite : true, recursive : true
-    }
-
+gradleTest {
+    versions '2.0', '3.2.1'
 }
 
-downloadDoxygen {
-    onlyIf { System.env.APPVEYOR }
-}
+//task downloadDoxygen << {
+//    mkdir doxygenDownloadDir
+//    vfs {
+//        cp "zip:http://ftp.stack.nl/pub/users/dimitri/doxygen-${doxygenTestVersion}.windows.bin.zip", doxygenDownloadDir,
+//            overwrite : true, recursive : true
+//    }
+//
+//}
+//
+//downloadDoxygen {
+//    onlyIf { System.env.APPVEYOR }
+//}
