@@ -1,0 +1,10 @@
+= CHANGELOG
+
+== Version 0.3 - Roadmap
+
+== Version 0.2
+* https://github.com/ysb33r/Gradle/issues/8[#8] - `template` not recognised as configuration option]
+* https://github.com/ysb33r/Gradle/issues/9[#9] - Change id to 'org.ysb33r.doxygen`
+
+== Version 0.1
+* Initial release
