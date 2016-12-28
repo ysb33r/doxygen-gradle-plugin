@@ -137,6 +137,15 @@ gradleTest {
     versions '2.0', '3.2.1'
 }
 
+cloudci {
+    appveyor {
+
+    }
+
+    travisci {
+
+    }
+}
 //task downloadDoxygen << {
 //    mkdir doxygenDownloadDir
 //    vfs {
