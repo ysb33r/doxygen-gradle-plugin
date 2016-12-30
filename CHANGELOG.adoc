@@ -1,6 +1,11 @@
 = CHANGELOG
 
 == Version 0.3 - Roadmap
+* Ability to download & cache Doxygen binaries on Linux, MacOS X and Windows
+* Handle multi-line settings in Doxyfile.
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/6[#6]
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/5[#5]
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/3[#3]
 
 == Version 0.2
 * https://github.com/ysb33r/Gradle/issues/8[#8] - `template` not recognised as configuration option]
