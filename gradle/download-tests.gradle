@@ -1,0 +1,84 @@
+// This is based upon what Rob Fletcher has done at
+// https://raw.githubusercontent.com/robfletcher/gradle-compass/master/gradle/download-tests.gradle
+
+ext {
+    currentOS =  org.gradle.internal.os.OperatingSystem.current()
+    doxygenCacheDir = "${buildDir}/doxygen-binaries"
+
+    // Always list the primary test version as the first one in this list.
+    doxygenTestVersions = [ '1.8.8' ]
+
+}
+
+configurations {
+    downloadTestCompile {
+        extendsFrom testCompile
+    }
+    downloadTestRuntime {
+        extendsFrom downloadTestCompile, testRuntime
+    }
+
+    doxygenTestVersions.each { ver ->
+        create "downloadTestCache${ver}"
+    }
+
+}
+
+dependencies {
+    doxygenTestVersions.each { ver ->
+        def doxygenModuleName = 'doxygen'
+        def doxygenExt
+
+        if(currentOS.windows) {
+            if (GradleVersion.version(ver) >= GradleVersion.version('1.8.0') && System.getProperty('os.arch').contains('64')) {
+                doxygenExt = 'windows.x64.bin.zip'
+            } else {
+                doxygenExt = 'windows.bin.zip'
+            }
+        } else if (currentOS.linux) {
+                doxygenExt = 'linux.bin.tar.gz'
+        } else if (currentOS.macOsX) {
+            doxygenModuleName = 'Doxygen'
+            doxygenExt = 'dmg'
+        }
+
+        add "downloadTestCache${ver}", ":${doxygenModuleName}:${ver}@${doxygenExt}"
+    }
+}
+
+sourceSets {
+    downloadTest {
+        java.srcDir file("src/downloadTest/java")
+        groovy.srcDir file("src/downloadTest/groovy")
+        resources.srcDir file("src/downloadTest/resources")
+        compileClasspath = sourceSets.main.output +  configurations.downloadTestCompile
+        runtimeClasspath = output + compileClasspath + configurations.downloadTestRuntime
+    }
+}
+
+task cacheDoxygenBinaries( type : Copy ) {
+    doxygenTestVersions.each { ver ->
+        from configurations.getByName("downloadTestCache${ver}")
+    }
+    into doxygenCacheDir
+}
+
+task downloadTest(type: Test, dependsOn: jar) {
+    testClassesDir = sourceSets.downloadTest.output.classesDir
+    classpath = sourceSets.downloadTest.runtimeClasspath
+    reports.html.destination = file("${reporting.baseDir}/downloadTest")
+
+    systemProperties DOXYGEN_CACHE_DIR : cacheDoxygenBinaries.destinationDir.absolutePath
+    systemProperties DOX_VERSION : doxygenTestVersions[0]
+    systemProperties 'TESTFSREADROOT'  : file("${projectDir}/src/downloadTest/resources").absolutePath
+    systemProperties 'TESTFSWRITEROOT' : file("${buildDir}/tmp/downloadTest").absolutePath
+    systemProperties 'DOXY_TEMPLATE'   : file("${projectDir}/src/main/resources/doxyfile-template.dox").absolutePath
+
+    mustRunAfter test
+    dependsOn cacheDoxygenBinaries
+}
+
+
+check.dependsOn downloadTest
+
+
