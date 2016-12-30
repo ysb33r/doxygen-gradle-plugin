@@ -31,7 +31,7 @@ buildscript {
 apply plugin : 'org.ysb33r.doxygen'
 ----
 
-This will create a default task called ```doxygen``` which can be configured.
+This will create a default task called `doxygen` which can be configured.
 
 [source,groovy]
 ----
@@ -55,6 +55,7 @@ task myAwesomeDoxygenTask (type:Doxygen) {
 ----
 
 == Configuration
+
 `Doxygen` is a `SourceTask` and all appropriate operations can be used. 
 
 [source,groovy]
@@ -123,11 +124,71 @@ part of the dependencies of the task
 
 Executables are configured via a special closure 
 
-```groovy
+[source,groovy]
+----
 doxygen {
   executables {
     dot_path '/path/to/dot'
     hhc_location '/path/to/hhc'    
   }
 }
-```
+----
+
+== Which Doxygen Executable?
+
+By default the system path is searched for the `doxygen` executable. A specific path
+can be provided by using the `executables` closure
+
+[source,groovy]
+----
+doxygen {
+  executables {
+     doxygen path : '/path/to/doxygen'
+  }
+}
+----
+
+As from v0.3 (for Linux, MacOSX & Windows) it is also possible to just specify the
+version and Doxygen will be bootstrapped & cached. This means it is possible to build
+documentation without the build script user having to actually install Doxygen !!
+
+[source,groovy[
+----
+doxygen {
+  executables {
+     doxygen version : '1.8.8'
+  }
+}
+----
+
+When using the above configuration it is also possible to configure the URI where
+to find Doxygen binaries as well as overriding where to install them.
+
+[source,groovy[
+----
+doxygen {
+  executables {
+     doxygen version : '1.8.8',
+        baseURI : 'ftp://our.company/binaries', // <1>
+        downloadRoot : project.file('/home/shared/doxygen') // <2>
+  }
+}
+----
+<1> Look for binaries at this URI. It will still use the default patterns as per
+  how the Doxygen project names t
+<2> Install the downloaded archives using this as the root directory.
+
+
+For backwards compatibility with 0.2 and 0.1 it is still possible to just
+ specify
+
+[source,groovy]
+----
+doxygen {
+  executables {
+    doxygen '/path/to/doxygen'
+  }
+}
+----
+
+This will result in a deprecation warning being printed.
