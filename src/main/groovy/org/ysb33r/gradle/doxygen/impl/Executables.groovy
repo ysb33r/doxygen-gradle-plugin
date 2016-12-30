@@ -14,25 +14,92 @@
 
 package org.ysb33r.gradle.doxygen.impl
 
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
+import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.util.CollectionUtils
+import org.ysb33r.gradle.olifant.StringUtils
+import org.ysb33r.gradle.olifant.UriUtils
+
 /**
  * Created by schalkc on 23/05/2014.
  */
+@CompileStatic
 class Executables {
 
-    static final def EXECUTABLES = [
-            'doxygen' : '',
+    private static final boolean VERSION_SUPPORTED = Downloader.OS.isWindows() || Downloader.OS.isLinux() || Downloader.OS.isMacOsX()
+
+    static final Map<String,String> EXECUTABLES = [
             'mscgen'  : 'MSCGEN_PATH',
             'dot'     : 'DOT_PATH',
             'perl'    : 'PERL_PATH',
             'hhc'     : 'HHC_LOCATION'
     ]
 
-    private def mapToUpdate
-
-    Executables( def map ) {
-        mapToUpdate = map
+    Executables(Map<String,Object> map, Project project ) {
+        this.mapToUpdate = map
+        this.project = project
     }
 
+    /** Set the doxygen executable to use. This can be in the form of a version or a path.
+     * The version variant is supported on Linux, MacOSX and Windows. On any other operating system only
+     * the path version will be supported at this point due to the fact that these are the only binary formats
+     * distributed by the Doxygen project.
+     *
+     * @param Map taking either {@code path} or {@code version} as key. if the latter is used then the following
+     * keys may also be used.
+     * <li> {@code baseURI} Override the base URI to download Doxygen binary distributions from.
+     * <li> {@code downloadRoot} Override the default location underneath {@code GRADLE_USER_HOME}. Primarily used for testing purposes.
+     *
+     * Any other keys are ignored.
+     *
+     * @since 0.3
+     */
+    void doxygen(final Map<String,Object> param) {
+
+        if(param.containsKey('version') && param.containsKey('path')) {
+            throw new GradleException("Cannot use both 'version' and 'path' keywords for setting Doxygen executable")
+        }
+
+        if(param.containsKey('version')) {
+            if(VERSION_SUPPORTED) {
+                mapToUpdate['doxygen'] = {
+                    Downloader dwnl = new Downloader(StringUtils.stringize(param['version']), project)
+
+                    if(param.containsKey('baseURI')) {
+                        dwnl.baseURI = UriUtils.urize(param['baseURI'])
+                    }
+
+                    if(param.containsKey('downloadRoot')) {
+                        dwnl.downloadRoot = project.file(param['downloadRoot'])
+                    }
+
+                    dwnl.doxygenExecutablePath.absolutePath
+                }
+            } else {
+                throw new GradleException('The \'version\' keyword is not supported on this operating system')
+            }
+        }
+
+        if(param.containsKey('path')) {
+            mapToUpdate['doxygen'] = {CollectionUtils.stringize([param['path']])[0]}
+        }
+
+    }
+
+    /** Method added to provide a deprecation message if map-based method is not used.
+     *
+     * @param path
+     * @since 0.3
+     */
+    @Deprecated
+    void doxygen(final String path) {
+        project.logger.warn("Use of single path name is deprecated. Please use `doxygen path : '/path/to/doxygen'` or `doxygen version : '1.2.3'`")
+        doxygen path : (Object)path
+    }
+
+    @CompileDynamic
     def methodMissing( String name, args ) {
 
         if( args.size() == 1 && EXECUTABLES[name] != null ) {
@@ -47,5 +114,6 @@ class Executables {
         throw new MissingMethodException(name,Executables.class,args)
     }
 
-
+    private Map<String,Object> mapToUpdate
+    private Project project
 }

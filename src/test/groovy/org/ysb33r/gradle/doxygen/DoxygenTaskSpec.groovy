@@ -21,31 +21,8 @@ import org.gradle.testfixtures.ProjectBuilder
 
 class DoxygenTaskSpec extends spock.lang.Specification {
 
-    static final Boolean DO_NOT_RUN_DOXYGEN_EXE_TESTS = System.getProperty('DO_NOT_RUN_DOXYGEN_EXE_TESTS')
-    static final File TESTFSREADROOT = new File( System.getProperty('TESTFSREADROOT') ?: 'src/test/resources' )
-    static final File TESTFSWRITEROOT = new File( System.getProperty('TESTFSWRITEROOT') ?: 'build/tmp/test' )
-    static final File DOXY_TEMPLATE = new File ( System.getProperty('DOXY_TEMPLATE') ?: 'src/main/resources/doxyfile-template.dox')
-
-    Project project = ProjectBuilder.builder().withProjectDir(TESTFSREADROOT).build()
+    Project project = ProjectBuilder.builder().build()
     def dox = project.task('doxygen', type: Doxygen )
-
-    void setup() {
-        if(TESTFSWRITEROOT.exists()) {
-            TESTFSWRITEROOT.deleteDir()
-        }
-
-        TESTFSWRITEROOT.mkdirs()
-
-        project.buildDir = TESTFSWRITEROOT
-
-        if(System.getProperty('DOXYGEN_PATH')) {
-            dox.configure {
-                executables {
-                    doxygen System.getProperty('DOXYGEN_PATH')
-                }
-            }
-        }
-    }
 
     def "Setting specific Doxygen properties that take boolean values"() {
         given:
@@ -92,13 +69,13 @@ class DoxygenTaskSpec extends spock.lang.Specification {
         given:
             dox.configure {
                 executables {
-                    doxygen '/path/to/doxygen'
+                    doxygen path : '/path/to/doxygen'
                     mscgen  '/path/to/mscgen'
                 }
             }
 
         expect:
-            dox.executables.doxygen == '/path/to/doxygen'
+            dox.executables.doxygen.call() == '/path/to/doxygen'
             dox.executables.mscgen  == '/path/to/mscgen'
 
     }
@@ -171,120 +148,21 @@ class DoxygenTaskSpec extends spock.lang.Specification {
 //            'WARNINGS'             | 'YES'
     }
 
-    @IgnoreIf( {DO_NOT_RUN_DOXYGEN_EXE_TESTS} )
-    def "Run Doxygen to generate simple documentation with a default template"() {
-        given:
-            dox.configure {
-                source new File(TESTFSREADROOT,'sample-cpp')
-                outputDir new File(TESTFSWRITEROOT,'docs')
-
-                generate_xml   false
-                generate_latex false
-                generate_html  true
-                have_dot       false
-
-                executables {
-                    dot 'path/to/dot'
-                }
-            }
-
-            dox.exec()
-
-        expect:
-            new File(TESTFSWRITEROOT,'docs/html').exists()
-            new File(TESTFSWRITEROOT,'docs/html/index.html').exists()
-            dox.doxygenProperties['DOT_PATH'] == new File('path/to/dot').absolutePath
-    }
-
     def "Setting image_path should also update the input files (not source files)"() {
         given:
             dox.configure {
-                source new File(TESTFSREADROOT,'sample-cpp')
-                outputDir new File(TESTFSWRITEROOT,'docs')
-                image_path new File(TESTFSREADROOT,'non-existing1')
-                image_path new File(TESTFSREADROOT,'non-existing2')
+                image_path project.file('src/non-existing1')
+                image_path "${project.projectDir}/src/non-existing2"
             }
 
             dox.setDefaults()
 
         expect:
-            dox.inputs.files.contains(new File(TESTFSREADROOT,'non-existing1'))
-            dox.inputs.files.contains(new File(TESTFSREADROOT,'non-existing2'))
-            dox.doxygenProperties['IMAGE_PATH'] == new File(TESTFSREADROOT,'non-existing1').absolutePath + ' ' +
-                    new File(TESTFSREADROOT,'non-existing2').absolutePath
+            dox.inputs.files.contains(project.file('src/non-existing1'))
+            dox.inputs.files.contains(project.file('src/non-existing2'))
+            dox.doxygenProperties['IMAGE_PATH'] == project.file('src/non-existing1').absolutePath + ' ' +
+                project.file('src/non-existing2').absolutePath
 
-    }
-
-    @IgnoreIf( {DO_NOT_RUN_DOXYGEN_EXE_TESTS} )
-    def "When custom template is supplied, expect template to be copied and then modified"() {
-        given:
-            Project proj = ProjectBuilder.builder().withName('DoxygenTaskSpec').build()
-            proj.buildDir = TESTFSWRITEROOT
-            def doxCustom = proj.task('doxygen', type: Doxygen )
-
-            doxCustom.configure {
-                source new File(TESTFSREADROOT,'sample-cpp')
-                outputDir new File(TESTFSWRITEROOT,'docs')
-
-                generate_xml   false
-                generate_latex false
-                generate_html  true
-                have_dot       false
-
-                template DOXY_TEMPLATE
-
-                if(System.getProperty('DOXYGEN_PATH')) {
-                    executables {
-                        doxygen System.getProperty('DOXYGEN_PATH')
-                    }
-                }
-            }
-
-            doxCustom.exec()
-
-            def lines = new File(proj.buildDir,'tmp/DoxygenTaskSpec.doxyfile').text.readLines()
-
-        expect:
-            new File(TESTFSWRITEROOT,'docs/html').exists()
-            new File(TESTFSWRITEROOT,'docs/html/index.html').exists()
-            lines.find { 'FILE_PATTERNS ='}
-            doxCustom.inputs.files.contains(DOXY_TEMPLATE)
-    }
-
-    @IgnoreIf( {DO_NOT_RUN_DOXYGEN_EXE_TESTS} )
-    def "When 'template' is supplied as a string, configuration should still work"() {
-        given:
-            Project proj = ProjectBuilder.builder().withName('DoxygenTaskSpec').build()
-            proj.buildDir = TESTFSWRITEROOT
-            def doxCustom = proj.task('doxygen', type: Doxygen )
-
-            doxCustom.configure {
-                source new File(TESTFSREADROOT,'sample-cpp')
-                outputDir new File(TESTFSWRITEROOT,'docs')
-
-                generate_xml   false
-                generate_latex false
-                generate_html  true
-                have_dot       false
-
-                template DOXY_TEMPLATE.absolutePath
-
-                if(System.getProperty('DOXYGEN_PATH')) {
-                    executables {
-                        doxygen System.getProperty('DOXYGEN_PATH')
-                    }
-                }
-            }
-
-            doxCustom.exec()
-
-            def lines = new File(proj.buildDir,'tmp/DoxygenTaskSpec.doxyfile').text.readLines()
-
-        expect:
-            new File(TESTFSWRITEROOT,'docs/html').exists()
-            new File(TESTFSWRITEROOT,'docs/html/index.html').exists()
-            lines.find { 'FILE_PATTERNS ='}
-            doxCustom.inputs.files.contains(DOXY_TEMPLATE)
     }
 }
 

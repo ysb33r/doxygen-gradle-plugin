@@ -19,9 +19,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 
-/**
- * Created by schalkc on 22/05/2014.
- */
 class DoxyfileEditorSpec extends Specification {
     static final File SRC_DOXYFILE = new File( System.getProperty('TESTFSREADROOT') ?: 'src/test/resources','DoxyfileEditor.dox' )
     static final File WRITEABLE_DOXYFILE = new File( System.getProperty('TESTFSWRITEROOT') ?: 'build/tmp/test','editor/DoxyfileEditor.dox' )

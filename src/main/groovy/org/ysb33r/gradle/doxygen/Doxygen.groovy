@@ -14,7 +14,8 @@
 
 package org.ysb33r.gradle.doxygen
 
-
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.SourceTask
@@ -34,16 +35,25 @@ import org.ysb33r.gradle.doxygen.impl.Executables
  *
  * @author Schalk W. Cronjé
  */
+@CompileStatic
 class Doxygen extends SourceTask {
 
-    private def paths = [doxygen: 'doxygen']
-    private def templateFile = null
-    private DoxygenProperties doxyUpdate = new DoxygenProperties()
-    private List<File> imagePaths = []
-
-    @Optional
+    /** Docuemtnation output directory
+     *
+     * @return Directory that was set earlier via {@link #setOutputDir} otherwise {@code $buildDir/docs/doxygen}   .
+     */
     @OutputDirectory
-    File outputDir = new File(project.buildDir, 'docs/doxygen')
+    File getOutputDir() {
+        project.file(this.outputDir)
+    }
+
+    /** Sets the output directory
+     *
+     * @param dir A path that can be converetd with {@code project.file}.
+     */
+    void setOutputDir(Object dir) {
+        this.outputDir = dir
+    }
 
     /** Constructs a Doxygen task object and sets some default Doxygen properties
      *
@@ -75,7 +85,8 @@ class Doxygen extends SourceTask {
      *
      * @return
      */
-     def getExecutables() { paths.asImmutable() }
+    @CompileDynamic
+    def getExecutables() { paths.asImmutable() }
 
     /** Allows for setting paths to various executables. By default they would be searched for
      * in the search path.
@@ -85,9 +96,10 @@ class Doxygen extends SourceTask {
      * <li>doxygen
      * <li>mscgen
      */
+    @CompileDynamic
     void executables(Closure cfg) {
         Closure cl = cfg.clone()
-        cl.delegate = new Executables(paths)
+        cl.delegate = new Executables(paths,project)
         cl.resolveStrategy = Closure.DELEGATE_FIRST
         cl.call()
     }
@@ -123,7 +135,7 @@ class Doxygen extends SourceTask {
             File fName
             switch (it) {
                 case File:
-                    fName = it
+                    fName = (File)it
                     break
                 default:
                     fName = new File(it.toString())
@@ -157,6 +169,7 @@ class Doxygen extends SourceTask {
         runDoxygen(doxyfile)
     }
 
+    @CompileDynamic
     def methodMissing(String name, args) {
 
         switch (name) {
@@ -196,6 +209,7 @@ class Doxygen extends SourceTask {
 
     /** Returns the current hashmap of Doxygen properties that will override settings in the Doxygen file
      */
+    @CompileDynamic
     def getDoxygenProperties() {
         doxyUpdate.properties.asImmutable()
     }
@@ -204,6 +218,7 @@ class Doxygen extends SourceTask {
      *
      */
     @groovy.transform.PackageScope
+    @CompileDynamic
     void setDefaults() {
 
         if (imagePaths.size()) {
@@ -211,16 +226,21 @@ class Doxygen extends SourceTask {
         }
 
         if(source.files.empty) {
-            source 'src/main/cpp','src/main/headers','src/main/asm','src/main/objectiveC','src/main/objectiveCpp','src/main/c'
+            source 'src/main/cpp',
+                'src/main/headers',
+                'src/main/asm',
+                'src/main/objectiveC',
+                'src/main/objectiveCpp',
+                'src/main/c'
         }
         
         doxyUpdate.setProperty('INPUT', source)
-        doxyUpdate.setProperty('OUTPUT_DIRECTORY', outputDir)
+        doxyUpdate.setProperty('OUTPUT_DIRECTORY', getOutputDir() )
 
         def workaround = doxyUpdate
         paths.each { name,path ->
             if( name != 'doxygen' ) {
-                workaround.setProperty(Executables.EXECUTABLES[name],new File(path))
+                workaround.setProperty(Executables.EXECUTABLES[name],project.file(path))
             }
         }
     }
@@ -248,7 +268,7 @@ class Doxygen extends SourceTask {
         return doxyfile
     }
 
-    /** Edits a Doxyfile and replaces existign properties with ones passed down via
+    /** Edits a Doxyfile and replaces existing properties with ones passed down via
      * Gradle configuration.
      *
      * @param doxyfile
@@ -263,15 +283,23 @@ class Doxygen extends SourceTask {
      * @param doxyfile
      * @param cmdargs
      */
+    @CompileDynamic
     private void runDoxygen(final File doxyfile, def cmdargs = []) {
 
         cmdargs.add(doxyfile.absolutePath)
         ExecResult execResult = project.exec {
-
-            executable  executables.doxygen
+            executable  executables.doxygen.call()
             args        cmdargs
         }
     }
+
+    private Map<String,Object> paths = [ doxygen: (Object){'doxygen'} ]
+    private File templateFile = null
+    private DoxygenProperties doxyUpdate = new DoxygenProperties()
+    private List<File> imagePaths = []
+    private Object outputDir = new File(project.buildDir, 'docs/doxygen')
+
+
 }
 
 
