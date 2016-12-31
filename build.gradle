@@ -16,8 +16,8 @@ import org.ysb33r.gradle.bintray.BintraySignVersion
 group = 'org.ysb33r.gradle'
 archivesBaseName = 'doxygen'
 version = '0.3-SNAPSHOT'
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 ext {
     moduleName = rootProject.name
@@ -76,7 +76,7 @@ artifacts {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ysb33r.gradle:grolifant:0.1-SNAPSHOT'
+    compile 'org.ysb33r.gradle:grolifant:0.1'
     testCompile ("org.spockframework:spock-core:1.0-groovy-${spockGroovyVer}") {
         exclude module : 'groovy-all'
     }
