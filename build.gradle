@@ -23,7 +23,6 @@ ext {
     moduleName = rootProject.name
     bintrayOwner = 'ysb33r'
     bintrayRepo = 'grysb33r'
-    doxygenTestVersion = '1.8.9'
     doxygenDownloadDir = new File(buildDir,'doxygen')
     spockGroovyVer = GroovySystem.version.replaceAll(/\.\d+$/,'')
 }
@@ -54,7 +53,6 @@ jar {
 test {
     systemProperties 'TESTFSREADROOT'  : new File(projectDir,'src/test/resources').absolutePath
     systemProperties 'TESTFSWRITEROOT' : new File(buildDir,'tmp/test/doxygen').absolutePath
-//    systemProperties 'DOXY_TEMPLATE'   : new File(projectDir,'src/main/resources/doxyfile-template.dox').absolutePath
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -141,6 +139,9 @@ license {
 
 gradleTest {
     versions '2.0', '3.2.1'
+    systemProperties DOX_VERSION : doxygenTestVersions[0]
+    systemProperties DOX_REPO : cacheDoxygenBinaries.destinationDir
+    dependsOn cacheDoxygenBinaries
 }
 
 appveyor {
@@ -150,16 +151,3 @@ appveyor {
 travisci {
 
 }
-
-//task downloadDoxygen << {
-//    mkdir doxygenDownloadDir
-//    vfs {
-//        cp "zip:http://ftp.stack.nl/pub/users/dimitri/doxygen-${doxygenTestVersion}.windows.bin.zip", doxygenDownloadDir,
-//            overwrite : true, recursive : true
-//    }
-//
-//}
-//
-//downloadDoxygen {
-//    onlyIf { System.env.APPVEYOR }
-//}

@@ -1,0 +1,21 @@
+import org.gradle.internal.os.OperatingSystem
+
+apply plugin : 'org.ysb33r.doxygen'
+
+doxygen {
+    executables {
+        doxygen version : System.getProperty('DOX_VERSION'),
+            baseURI : project.file(System.getProperty('DOX_REPO')).toURI()
+    }
+
+    doLast {
+        File html = project.file("${buildDir}/docs/doxygen/index.htmlll")
+        if(!html.exists()) {
+            throw new GradleException("Documentation not found at ${html}")
+        }
+    }
+}
+
+task runGradleTest {
+    dependsOn doxygen
+}
