@@ -88,17 +88,6 @@ class Executables {
 
     }
 
-    /** Method added to provide a deprecation message if map-based method is not used.
-     *
-     * @param path
-     * @since 0.3
-     */
-    @Deprecated
-    void doxygen(final String path) {
-        project.logger.warn("Use of single path name is deprecated. Please use `doxygen path : '/path/to/doxygen'` or `doxygen version : '1.2.3'`")
-        doxygen path : (Object)path
-    }
-
     @CompileDynamic
     def methodMissing( String name, args ) {
 

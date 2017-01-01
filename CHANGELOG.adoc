@@ -2,6 +2,10 @@
 
 == Version 0.3 - Roadmap
 
+=== Breaking changes
+
+* `executables.doxygen` no longer will just accept a single string. It is now a map-based method. If you hard-coded paths to DOxygen installations before you will need to change it to read `doxygen path : '/path/to/doxygen'`.
+
 === Features
 
 * Ability to download & cache Doxygen binaries on Linux, MacOS X and Windows
