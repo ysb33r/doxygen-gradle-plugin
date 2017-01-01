@@ -48,7 +48,7 @@ class DoxyfileEditorSpec extends Specification {
         expect:
             lines.find { it == 'CREATE_SUBDIRS = YES'}
             !lines.find { it.startsWith('#') }
-            lines.find { it == 'FILE_PATTERNS = *.c *.cpp' }
+            lines.find { it =~ /FILE_PATTERNS\s+=\s+\*\.c\s+\*\.cpp\s+\*\.cxx\s+\*\.cc/ }
             lines.find { it == 'PROJECT_NUMBER = 1.11' }
     }
 }
