@@ -1,45 +1,47 @@
-
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath 'org.ysb33r.gradle:vfs-gradle-plugin:1.0-beta2'
-        classpath 'org.ysb33r.gradle:bintray:1.5'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1'
-        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
-        classpath 'commons-httpclient:commons-httpclient:3.1'
-    }
+plugins {
+    id 'groovy'
+    id 'maven'
+    id 'org.ysb33r.bintray' version '1.5'
+    id 'org.ysb33r.cloudci' version '1.0'
+    id 'org.ysb33r.gradletest' version '1.0-beta7'
+    id 'com.jfrog.artifactory' version '3.0.1'
+    id 'com.github.hierynomus.license' version '0.13.1'
 }
 
-apply plugin : 'org.ysb33r.bintray'
-apply plugin : 'org.ysb33r.vfs'
-apply plugin : 'groovy'
-apply plugin : 'maven'
-apply plugin : 'com.jfrog.artifactory'
-apply plugin : 'com.github.hierynomus.license'
+apply from : 'gradle/download-tests.gradle'
+
 import org.ysb33r.gradle.bintray.BintraySignVersion
 
 
 group = 'org.ysb33r.gradle'
 archivesBaseName = 'doxygen'
-version = '0.3-SNAPSHOT'
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+version = '0.3'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 ext {
-    moduleName = 'doxygen-gradle-plugin'
+    moduleName = rootProject.name
     bintrayOwner = 'ysb33r'
     bintrayRepo = 'grysb33r'
-    doxygenTestVersion = '1.8.9'
     doxygenDownloadDir = new File(buildDir,'doxygen')
+    spockGroovyVer = GroovySystem.version.replaceAll(/\.\d+$/,'')
 }
 
 repositories {
     jcenter()
+
+    if(version.endsWith("SNAPSHOT")) {
+        mavenLocal()
+    }
+
+    ivy {
+        name 'Downloader for Doxygen distributions'
+        url 'http://ftp.stack.nl/pub/users/dimitri'
+        resolve.dynamicMode = false
+        layout 'pattern', {
+            artifact '[artifact]-[revision].[ext]'
+        }
+    }
 }
 
 jar {
@@ -51,18 +53,6 @@ jar {
 test {
     systemProperties 'TESTFSREADROOT'  : new File(projectDir,'src/test/resources').absolutePath
     systemProperties 'TESTFSWRITEROOT' : new File(buildDir,'tmp/test/doxygen').absolutePath
-    systemProperties 'DOXY_TEMPLATE'   : new File(projectDir,'src/main/resources/doxyfile-template.dox').absolutePath
-
-    // Use -PDO_NOT_RUN_DOXYGEN_EXE_TESTS=1 to skip any test that requires the 'doxygen' executable
-    if(project.properties.DO_NOT_RUN_DOXYGEN_EXE_TESTS) {
-        systemProperties 'DO_NOT_RUN_DOXYGEN_EXE_TESTS' : '1'
-    }
-
-    // The location of the doxygen executable can be controlled by setting -PDOXYGEN_PATH=/path/to/doxygen
-    // on the cmd-line
-    if(project.properties.DOXYGEN_PATH) {
-        systemProperties 'DOXYGEN_PATH' : new File(project.properties.DOXYGEN_PATH).absolutePath
-    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -81,10 +71,12 @@ artifacts {
     archives javadocJar
 }
 
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    testCompile ('org.spockframework:spock-core:0.7-groovy-2.0') {
+    compile 'org.ysb33r.gradle:grolifant:0.1'
+    testCompile ("org.spockframework:spock-core:1.0-groovy-${spockGroovyVer}") {
         exclude module : 'groovy-all'
     }
 }
@@ -117,15 +109,15 @@ task signArchives (type:BintraySignVersion ) {
 uploadArchives  {
     repositories {
         bintrayMavenDeployer {
-            username    project.properties.bintrayUserName
-            apiKey      project.properties.bintrayApiKey
-            repoOwner   bintrayOwner
-            repoName    bintrayRepo
-            packageName moduleName
-            description 'This is a plugin for Gradle that allows Doxygen (www.doxygen.org) to be used to generate documentation'
-            tags        'gradle','doxygen','documentation'
+            username          project.properties.bintrayUserName
+            apiKey            project.properties.bintrayApiKey
+            repoOwner         bintrayOwner
+            repoName          bintrayRepo
+            packageName       moduleName
+            description       'This is a plugin for Gradle that allows Doxygen (www.doxygen.org) to be used to generate documentation'
+            tags              'gradle','doxygen','documentation'
             licenses          'Apache-2.0'
-            vcsUrl            'https://github.com/ysb33r/Gradle.git'
+            vcsUrl            'https://github.com/ysb33r/doxygen-gradle-plugin.git'
             autoCreatePackage true
             updatePackage     true
             versionAttributes 'gradle-plugin' : "org.ysb33r.doxygen:${group}:${archivesBaseName}"
@@ -142,19 +134,30 @@ license {
     mapping {
         groovy ='DOUBLESLASH_STYLE'
     }
-    ext.year = '2013-2015'
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties','**/*.dox'])
+    ext.year = '2013-2017'
+    excludes([
+        '**/*.adoc', '**/*.md',
+        '**/*.properties',
+        '**/*.dox',
+        '**/*CompatibilitySpec.groovy'
+    ])
 }
 
-task downloadDoxygen << {
-    mkdir doxygenDownloadDir
-    vfs {
-        cp "zip:http://ftp.stack.nl/pub/users/dimitri/doxygen-${doxygenTestVersion}.windows.bin.zip", doxygenDownloadDir,
-            overwrite : true, recursive : true
+gradleTest {
+    versions '2.0', '2.5', '2.8', '2.13', '3.0', '3.2.1'
+    systemProperties DOX_VERSION : doxygenTestVersions[0]
+    systemProperties DOX_REPO : cacheDoxygenBinaries.destinationDir
+    dependsOn cacheDoxygenBinaries
+}
+
+appveyor {
+    gradleTest {
+        maxParallelForks = 4
     }
-
 }
 
-downloadDoxygen {
-    onlyIf { System.env.APPVEYOR }
+travisci {
+    gradleTest {
+        maxParallelForks = 1
+    }
 }

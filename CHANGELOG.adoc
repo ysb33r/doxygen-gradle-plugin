@@ -1,0 +1,29 @@
+= CHANGELOG
+
+== Version 0.4 - Roadmap
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/6[#6] - Investigate potential Doxygen 1.8.12 issue.
+
+== Version 0.3
+
+=== Breaking changes
+
+* `executables.doxygen` no longer will just accept a single string. It is now a map-based method. If you hard-coded paths to DOxygen installations before you will need to change it to read `doxygen path : '/path/to/doxygen'`.
+
+=== Features
+
+* Minimum supported JDK is 1.7
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/3[#3] - No need to install Doxygen on Linux, MacOsX and Windows.
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/2[#2] - Deprecated XML_SCHEMA, XML_DTD removed from template Doxyfile.
+
+=== Bugs
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/5[#5] - Parse continuation backslashes correctly.
+
+== Version 0.2
+* https://github.com/ysb33r/Gradle/issues/8[#8] - `template` not recognised as configuration option]
+* https://github.com/ysb33r/Gradle/issues/9[#9] - Change id to 'org.ysb33r.doxygen`
+
+== Version 0.1
+
+* Initial release

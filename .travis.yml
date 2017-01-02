@@ -1,11 +1,16 @@
 language: groovy
-script: ./gradlew clean build  -PbintrayUserName= -PbintrayApiKey --info -PDO_NOT_RUN_DOXYGEN_EXE_TESTS=1
+script: ./gradlew clean build  --info --no-daemon
 jdk:
  - oraclejdk7
  - oraclejdk8
  - openjdk7
 os:
  - linux
- - osx
 env: TERM=dumb
-#after_success: ./gradlew coveralls -PbintrayUser= -PbintrayApiKey
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -fr $HOME/.gradle/caches/*/scripts/
+cache:
+  directories:
+  - "$HOME/.gradle"

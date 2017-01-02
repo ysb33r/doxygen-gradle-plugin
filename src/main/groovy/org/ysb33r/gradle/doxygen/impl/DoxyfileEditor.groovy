@@ -1,6 +1,6 @@
 //
 // ============================================================================
-// (C) Copyright Schalk W. Cronje 2013-2015
+// (C) Copyright Schalk W. Cronje 2013-2017
 //
 // This software is licensed under the Apache License 2.0
 // See http://www.apache.org/licenses/LICENSE-2.0 for license details
@@ -14,6 +14,7 @@
 
 package org.ysb33r.gradle.doxygen.impl
 
+import groovy.transform.CompileStatic
 import groovy.transform.TupleConstructor
 import org.gradle.api.logging.Logger
 import org.ysb33r.gradle.doxygen.DoxygenException
@@ -44,7 +45,7 @@ class DoxyfileEditor {
         }
 
         // Read all lines
-        def properties = readProperties(doxyfile)
+        Map properties = readProperties(doxyfile)
         updates.each { name,value ->
             if(properties[name] == null) {
                 logger.warn "Ignoring '${name}' as it has not been found in the Doxyfile template"
@@ -65,25 +66,50 @@ class DoxyfileEditor {
      * @param doxyfile - File to be parsed
      * @return A map of properties
      */
-    private def readProperties( final File doxyfile ) {
-        def result = [:]
+    private Map readProperties( final File doxyfile ) {
+        Map result = [:]
         Integer lineCount
+        boolean continuation = false
+        String last
         doxyfile.eachLine { line,count ->
-            if( !( line.size() == 0 || line.startsWith('#') || line.matches(/^\s+$/)) ) {
-                Matcher matches = line =~ /^\s*([\p{Upper}\p{Digit}_]{3,})\s*(\+?\=)\s*(.*)$/
+            if (continuation) {
+                continuation=line.endsWith('\\')
+                result[last]+= " ${trimContinuationMarker(line)}"
+            } else {
+                if( !( line.size() == 0 || line.startsWith('#') || line.matches(/^\s+$/)) ) {
+                    Matcher matches = line =~ /^\s*([\p{Upper}\p{Digit}_]{3,})\s*(\+?\=)\s*(.*)$/
 
-                if(!matches || matches[0].size() != 4) {
-                    throw new DoxygenException("Doxyfile parsing error ${doxyfile.absolutePath}:${count}")
-                }
+                    if(!matches || matches[0].size() != 4) {
+                        throw new DoxygenException("Doxyfile parsing error ${doxyfile.absolutePath}:${count}")
+                    }
 
-                if(matches[0][2] == '+=' && result[matches[0][1]]) {
-                    result[matches[0][1]]+= " ${matches[0][3]}"
-                } else {
-                    result[matches[0][1]] = matches[0][3]
+                    continuation=line.endsWith('\\')
+                    if(matches[0][2] == '+=' && result[matches[0][1]]) {
+                        last = matches[0][1]
+                        result[last]+= " ${trimContinuationMarker(matches[0][3])}"
+                    } else {
+                        last = matches[0][1]
+                        result[last] = trimContinuationMarker(matches[0][3])
+                    }
                 }
             }
         }
 
         return result
+    }
+
+    @CompileStatic
+    private String trimContinuationMarker(final String line) {
+        if(line.endsWith('\\')) {
+            if(line.size() == 1) {
+                return ''
+            } else if(line.size() == 2) {
+                return line[0]
+            } else {
+                return line[0..-2]
+            }
+        } else {
+            return line
+        }
     }
 }
