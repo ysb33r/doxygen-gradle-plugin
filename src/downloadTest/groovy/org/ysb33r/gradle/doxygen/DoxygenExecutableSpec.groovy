@@ -83,7 +83,7 @@ class DoxygenExecutableSpec extends DownloadTestSpecification {
             have_dot       false
 
             executables {
-                dot '/path/to/dot'
+                dot OS.windows ? 'C:/path/to/dot' :'/path/to/dot'
             }
         }
 
@@ -92,11 +92,7 @@ class DoxygenExecutableSpec extends DownloadTestSpecification {
         expect:
         new File(TESTFSWRITEROOT,'docs/html').exists()
         new File(TESTFSWRITEROOT,'docs/html/index.html').exists()
-        dox.doxygenProperties['DOT_PATH'] == new File('/path/to/dot').absolutePath
-    }
-
-    @IgnoreIf({DownloadTestSpecification.SKIP_TESTS})
-    def "When custom template is supplied, expect template to be copied and then modified"() {
+        dox.doxygenProperties['DOT_PATH'] == new File( OS.windows ? 'C:/path/to/dot' : '/path/to/dot').absolutePath
     }
 
 
