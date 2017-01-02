@@ -135,7 +135,12 @@ license {
         groovy ='DOUBLESLASH_STYLE'
     }
     ext.year = '2013-2017'
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties','**/*.dox'])
+    excludes([
+        '**/*.adoc', '**/*.md',
+        '**/*.properties',
+        '**/*.dox',
+        '**/*CompatibilitySpec.groovy'
+    ])
 }
 
 gradleTest {
