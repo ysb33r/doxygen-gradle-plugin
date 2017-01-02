@@ -17,7 +17,7 @@
 === Bugs
 
 * https://github.com/ysb33r/doxygen-gradle-plugin/issues/6[#6] - Failure with Doxygen 1.8.12
-* https://github.com/ysb33r/doxygen-gradle-plugin/issues/5[#5] - Task won't run with just template property set
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/5[#5] - Parse continuation backslashes correctly.
 
 == Version 0.2
 * https://github.com/ysb33r/Gradle/issues/8[#8] - `template` not recognised as configuration option]
