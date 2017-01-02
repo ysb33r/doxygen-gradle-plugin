@@ -3,7 +3,7 @@ plugins {
     id 'maven'
     id 'org.ysb33r.bintray' version '1.5'
     id 'org.ysb33r.cloudci' version '1.0'
-    id 'org.ysb33r.gradletest' version '1.0-beta5'
+    id 'org.ysb33r.gradletest' version '1.0-beta7'
     id 'com.jfrog.artifactory' version '3.0.1'
     id 'com.github.hierynomus.license' version '0.13.1'
 }
@@ -70,6 +70,7 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
 
 dependencies {
     compile gradleApi()
