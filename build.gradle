@@ -6,6 +6,7 @@ plugins {
     id 'org.ysb33r.gradletest' version '1.0-beta7'
     id 'com.jfrog.artifactory' version '3.0.1'
     id 'com.github.hierynomus.license' version '0.13.1'
+    id 'com.gradle.plugin-publish' version '0.9.4'
 }
 
 apply from : 'gradle/download-tests.gradle'
@@ -25,14 +26,11 @@ ext {
     bintrayRepo = 'grysb33r'
     doxygenDownloadDir = new File(buildDir,'doxygen')
     spockGroovyVer = GroovySystem.version.replaceAll(/\.\d+$/,'')
+    notSnapshot = {!version.endsWith("SNAPSHOT")}
 }
 
 repositories {
     jcenter()
-
-    if(version.endsWith("SNAPSHOT")) {
-        mavenLocal()
-    }
 
     ivy {
         name 'Downloader for Doxygen distributions'
@@ -124,7 +122,32 @@ uploadArchives  {
         }
     }
 
-    onlyIf { !version.endsWith("SNAPSHOT") }
+    onlyIf notSnapshot
+}
+
+pluginBundle {
+    description = 'Doxygen plugin for Gradle'
+    website     = 'https://github.com/ysb33r/doxygen-gradle-plugin'
+    vcsUrl      = 'https://github.com/ysb33r/doxygen-gradle-plugin.git'
+
+    tags = ['doxygen','documentation','native','cpp','c','c++']
+
+    plugins {
+        gradletestPlugin {
+            id = 'org.ysb33r.doxygen'
+            displayName = 'This is a plugin for Gradle that allows Doxygen (www.doxygen.org) to be used to generate documentation'
+        }
+    }
+
+    mavenCoordinates {
+        groupId = project.group
+        artifactId = 'doxygen-gradle-plugin'
+    }
+
+}
+publishPlugins {
+    onlyIf notSnapshot
+    mustRunAfter check
 }
 
 license {
@@ -160,4 +183,9 @@ travisci {
     gradleTest {
         maxParallelForks = 1
     }
+}
+
+task release {
+    dependsOn build, uploadArchives, publishPlugins
+    onlyIf notSnapshot
 }
