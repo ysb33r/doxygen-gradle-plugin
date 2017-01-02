@@ -1,6 +1,10 @@
 = CHANGELOG
 
-== Version 0.3 - Roadmap
+== Version 0.4 - Roadmap
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/6[#6] - Investigate potential Doxygen 1.8.12 issue.
+
+== Version 0.3
 
 === Breaking changes
 
@@ -8,15 +12,12 @@
 
 === Features
 
-* Ability to download & cache Doxygen binaries on Linux, MacOS X and Windows
-* Handle multi-line settings in Doxyfile.
 * Minimum supported JDK is 1.7
 * https://github.com/ysb33r/doxygen-gradle-plugin/issues/3[#3] - No need to install Doxygen on Linux, MacOsX and Windows.
 * https://github.com/ysb33r/doxygen-gradle-plugin/issues/2[#2] - Deprecated XML_SCHEMA, XML_DTD removed from template Doxyfile.
 
 === Bugs
 
-* https://github.com/ysb33r/doxygen-gradle-plugin/issues/6[#6] - Failure with Doxygen 1.8.12
 * https://github.com/ysb33r/doxygen-gradle-plugin/issues/5[#5] - Parse continuation backslashes correctly.
 
 == Version 0.2
@@ -24,4 +25,5 @@
 * https://github.com/ysb33r/Gradle/issues/9[#9] - Change id to 'org.ysb33r.doxygen`
 
 == Version 0.1
+
 * Initial release
