@@ -151,9 +151,13 @@ gradleTest {
 }
 
 appveyor {
-
+    gradleTest {
+        maxParallelForks = 4
+    }
 }
 
 travisci {
-
+    gradleTest {
+        maxParallelForks = 4
+    }
 }
