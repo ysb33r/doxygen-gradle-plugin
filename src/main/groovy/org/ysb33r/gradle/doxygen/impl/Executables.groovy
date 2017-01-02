@@ -18,6 +18,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.CollectionUtils
 import org.ysb33r.gradle.olifant.StringUtils
 import org.ysb33r.gradle.olifant.UriUtils
@@ -28,8 +29,6 @@ import org.ysb33r.gradle.olifant.UriUtils
 @CompileStatic
 class Executables {
 
-    private static final boolean VERSION_SUPPORTED = Downloader.OS.isWindows() || Downloader.OS.isLinux() || Downloader.OS.isMacOsX()
-
     static final Map<String,String> EXECUTABLES = [
             'mscgen'  : 'MSCGEN_PATH',
             'dot'     : 'DOT_PATH',
@@ -38,8 +37,10 @@ class Executables {
     ]
 
     Executables(Map<String,Object> map, Project project ) {
+        final OperatingSystem OS = OperatingSystem.current()
         this.mapToUpdate = map
         this.project = project
+        this.versionSupportedOnOS = OS.isWindows() || OS.isLinux() || OS.isMacOsX()
     }
 
     /** Set the doxygen executable to use. This can be in the form of a version or a path.
@@ -63,7 +64,7 @@ class Executables {
         }
 
         if(param.containsKey('version')) {
-            if(VERSION_SUPPORTED) {
+            if(versionSupportedOnOS) {
                 mapToUpdate['doxygen'] = {
                     Downloader dwnl = new Downloader(StringUtils.stringize(param['version']), project)
 
@@ -105,4 +106,6 @@ class Executables {
 
     private Map<String,Object> mapToUpdate
     private Project project
+    private final boolean versionSupportedOnOS
+
 }
