@@ -1,0 +1,59 @@
+// See https://github.com/ysb33r/doxygen-gradle-plugin/issues/6
+
+apply plugin : 'org.ysb33r.doxygen'
+
+ext {
+    shared = file('shared')
+    athena = file('athena')
+    ntSourceDir = file('ntSourceDir')
+    halLocation = file('../hal')
+}
+
+doxygen {
+
+
+    executables {
+        doxygen version : '1.8.12',
+            baseURI : project.file(System.getProperty('DOX_REPO')).toURI()
+    }
+
+    source new File("${project.shared}/src")
+    source new File("${project.shared}/include")
+    source new File("${project.athena}/src")
+    source new File("${project.athena}/include")
+    source new File("$ntSourceDir/src")
+    source new File("$ntSourceDir/include")
+    source new File("$halLocation/shared")
+    source new File("$halLocation/athena")
+    source new File("$halLocation/include")
+
+    exclude 'nivision.h'
+    extension_mapping 'inc=C++'
+    project_name 'WPILibC++'
+    javadoc_autobrief true
+    recursive true
+    quiet true
+    warnings false
+    warn_if_doc_error false
+    warn_no_paramdoc false
+    warn_format false
+    warn_logfile false
+    warn_if_undocumented false
+    generate_latex false
+    html_timestamp true
+    generate_treeview true
+
+    outputDir new File("$buildDir/docs")
+
+    doLast {
+        File html = project.file("${buildDir}/docs/html/index.html")
+        if(!html.exists()) {
+            throw new GradleException("Documentation not found at ${html}")
+        }
+    }
+}
+
+task runGradleTest {
+    dependsOn doxygen
+}
+

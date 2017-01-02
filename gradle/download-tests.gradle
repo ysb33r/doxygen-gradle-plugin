@@ -6,7 +6,7 @@ ext {
     doxygenCacheDir = "${buildDir}/doxygen-binaries"
 
     // Always list the primary test version as the first one in this list.
-    doxygenTestVersions = [ '1.8.8' ]
+    doxygenTestVersions = [ '1.8.8','1.8.12' ]
 
 }
 
