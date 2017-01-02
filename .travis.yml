@@ -1,5 +1,5 @@
 language: groovy
-script: ./gradlew clean build  --info
+script: ./gradlew clean build  --info --no-daemon
 jdk:
  - oraclejdk7
  - oraclejdk8
