@@ -40,7 +40,13 @@ class DownloaderSpec extends DownloadTestSpecification {
 
         then: "The distribution is downloaded and unpacked"
         gotIt != null
-        new File(gotIt,'Contents').exists()
+        if(OS.windows) {
+            new File(gotIt,'doxygen.exe').exists()
+        } else if(OS.linux) {
+            new File(gotIt,'bin').exists()
+        } else if(OS.macOsX) {
+            new File(gotIt,'Contents').exists()
+        }
 
         when: "The doxygen executable is run to display the help page"
         project.exec {

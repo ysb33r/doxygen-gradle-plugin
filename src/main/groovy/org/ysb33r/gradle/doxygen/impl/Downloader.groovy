@@ -20,6 +20,7 @@ import org.gradle.api.Project
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.GradleVersion
 import org.ysb33r.gradle.olifant.AbstractDistributionInstaller
+import org.ysb33r.gradle.olifant.DistributionFailedException
 
 /** Downloads specific versions of Doxygen.
  * Curretnly limited to Linux, Windows & MacOS X on x86 32 + 64-bit architectures as these are the only ones for which
@@ -59,22 +60,37 @@ class Downloader extends AbstractDistributionInstaller {
         }
     }
 
-    /** Returns the path to the DOxygen executable.
+    /** Adds a special verification case for Doxygen Windows binaries.
+     *
+     * The Windows distribution is not zipped into a subfolder and needs extra care.
+     * For Linux & MacOsX it will use the default implementation.
+     *
+     * @param distDir Directory where distribution was unpacked to.
+     * @param distributionDescription A human-readable description
+     * @return Distribution directory
+     */
+    @Override
+    protected File getAndVerifyDistributionRoot(File distDir, String distributionDescription) {
+        if(OS.windows) {
+            if (!new File(distDir,'doxygen.exe').exists()) {
+                throw new DistributionFailedException("Doxygen '${distributionDescription}' does not contain 'doxygen.exe'.")
+            }
+            return distDir
+        } else {
+            super.getAndVerifyDistributionRoot(distDir, distributionDescription)
+        }
+    }
+
+    /** Returns the path to the Doxygen executable.
      * Will force a download if not already downloaded.
      *
      * @return Location of {@code doxygen} or null if not a supported operating system.
      */
     File getDoxygenExecutablePath() {
         if(OS.isWindows()) {
-            // Using GradleVersion as it has a handy version comparison
-//            if(GradleVersion.version(ver) >= GradleVersion.version('1.8.0') && System.getProperty('os.arch').contains('64')) {
-//                "${baseURI}/doxygen-${ver}.windows.x64.bin.zip".toURI()
-//            } else {
-//                "${baseURI}/doxygen-${s}.windows.bin.zip".toURI()
-//            }
-            null
+            new File(distributionRoot,'doxygen.exe')
         } else if(OS.isLinux()) {
-            null
+            new File(distributionRoot,'bin/doxygen')
         } else if(OS.isMacOsX()) {
             new File(distributionRoot,'Contents/Resources/doxygen')
         } else {
