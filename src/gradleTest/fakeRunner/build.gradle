@@ -6,6 +6,8 @@ doxygen {
     executables {
         doxygen path : project.file('fake-doxygen' + OperatingSystem.current().isWindows() ? '.bat' : '.sh')
     }
+
+    template 'Doxyfile'
 }
 
 task runGradleTest {
