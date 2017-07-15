@@ -18,6 +18,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.Input
@@ -67,20 +68,6 @@ class Doxygen extends SourceTask {
 
     }
 
-//    /** Indicates whether Xml should be generated
-//     *
-//     * @param genXml
-//     */
-//    def xml(boolean genXml) {
-//    }
-//
-//    /** Allows for the configuration of the XML block
-//     *
-//     * @param cfg
-//     */
-//    def xml(Closure cfg) {
-//    }
-
     /** Returns a map containing all of the executable paths that have been set
      *
      * @return
@@ -104,13 +91,18 @@ class Doxygen extends SourceTask {
         cl.call()
     }
 
+    @Optional
+    @InputFile
+    File getTemplate() {
+        this.templateFile
+    }
+
     /** Sets the template Doxyfile to be used. If not supplied a default one will be
      * generated to be used as a template.
      *
      * @param tmpl Template Doxyfile
      */
     void template(final File tmpl) {
-        inputs.file tmpl
         templateFile = tmpl
     }
 
@@ -120,7 +112,7 @@ class Doxygen extends SourceTask {
      * @param tmpl Template Doxyfile
      */
     void template(final String tmpl) {
-        template new File(tmpl)
+        template project.file(tmpl)
     }
 
     /** Allows for one more image paths to be set
