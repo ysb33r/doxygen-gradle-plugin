@@ -129,7 +129,8 @@ class DoxygenTaskSpec extends spock.lang.Specification {
             'PROJECT_BRIEF'        | '"This is a description with spaces"'
     }
 
-    def "Default Doxygen properties should be set for specific paths and gradle properties"() {
+    @Unroll
+    def "Default Doxygen properties should be set for #doxName"() {
         given:
             Project proj = ProjectBuilder.builder().withName('DoxygenTaskSpec').build()
             proj.version  = '1.1'
@@ -142,10 +143,7 @@ class DoxygenTaskSpec extends spock.lang.Specification {
 
         where:
             doxName                | doxValue
-            'PROJECT_NUMBER'       | '1.1'
             'PROJECT_NAME'         | 'DoxygenTaskSpec'
-//            'QUIET'                | 'NO'
-//            'WARNINGS'             | 'YES'
     }
 
     def "Setting image_path should also update the input files (not source files)"() {
@@ -154,7 +152,7 @@ class DoxygenTaskSpec extends spock.lang.Specification {
                 image_path project.file('src/non-existing1')
                 image_path "${project.projectDir}/src/non-existing2"
             }
-
+            project.version = '1.999'
             dox.setDefaults()
 
         expect:
@@ -162,7 +160,7 @@ class DoxygenTaskSpec extends spock.lang.Specification {
             dox.inputs.files.contains(project.file('src/non-existing2'))
             dox.doxygenProperties['IMAGE_PATH'] == project.file('src/non-existing1').absolutePath + ' ' +
                 project.file('src/non-existing2').absolutePath
-
+            dox.doxygenProperties['PROJECT_NUMBER'] == '1.999'
     }
 }
 

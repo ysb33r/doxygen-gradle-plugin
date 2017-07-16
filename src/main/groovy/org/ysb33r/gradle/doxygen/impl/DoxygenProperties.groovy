@@ -14,11 +14,13 @@
 
 package org.ysb33r.gradle.doxygen.impl
 
+import groovy.transform.CompileStatic
 import org.gradle.api.file.FileCollection
 
 /**
  * Created by schalkc on 21/05/2014.
  */
+@CompileStatic
 class DoxygenProperties {
 
     void setProperty(final String name, Boolean value) {
@@ -30,7 +32,7 @@ class DoxygenProperties {
     }
 
      void setProperty(final String name, File[] values) {
-        setProperty(name,values.collect { it.absolutePath } as String[])
+        setProperty(name,values.collect { File it -> it.absolutePath } as String[])
     }
 
      void setProperty(final String name, FileCollection values) {
@@ -39,7 +41,7 @@ class DoxygenProperties {
 
      void setProperty(final String name, String value) {
         if(value =~ /\s+/ ) {
-            doxyUpdate[doxName(name)] = "\"${value}\""
+            doxyUpdate[doxName(name)] = "\"${value}\"".toString()
         } else {
             doxyUpdate[doxName(name)] = value
         }
@@ -53,14 +55,14 @@ class DoxygenProperties {
     }
 
     void setProperty(final String name, Number value) {
-        doxyUpdate[doxName(name)] = "${value}"
+        doxyUpdate[doxName(name)] = "${value}".toString()
     }
 
     void setProperty(final String name,Object[] values) {
         setProperty( name, values.collect { value ->
             switch(value) {
                 case File:
-                    return value.absolutePath
+                    return ((File)value).absolutePath
 
                 default:
                     return value.toString()
@@ -68,12 +70,12 @@ class DoxygenProperties {
         } as String[] )
     }
 
-    def getProperties() { doxyUpdate }
+    Map<String,String> getProperties() { this.doxyUpdate }
 
     private String doxName(final String name) {
         name.toUpperCase()
     }
 
-    private def doxyUpdate = [:]
+    private final Map<String,String> doxyUpdate = [:]
 
 }
