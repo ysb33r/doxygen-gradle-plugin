@@ -2,6 +2,8 @@ import org.gradle.internal.os.OperatingSystem
 
 apply plugin : 'org.ysb33r.doxygen'
 
+version = '1.999'
+
 doxygen {
     executables {
         doxygen path : project.file('fake-doxygen' + OperatingSystem.current().isWindows() ? '.bat' : '.sh')
@@ -12,4 +14,5 @@ doxygen {
 
 task runGradleTest {
     dependsOn doxygen
+
 }

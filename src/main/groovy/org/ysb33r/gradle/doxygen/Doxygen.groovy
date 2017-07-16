@@ -60,12 +60,9 @@ class Doxygen extends SourceTask {
      *
      */
     Doxygen() {
-
-        doxyUpdate.setProperty('PROJECT_NUMBER', project.version)
         doxyUpdate.setProperty('PROJECT_NAME', project.name)
         doxyUpdate.setProperty('QUIET', project.logger.isQuietEnabled())
         doxyUpdate.setProperty('WARNINGS', !project.logger.isQuietEnabled())
-
     }
 
     /** Returns a map containing all of the executable paths that have been set
@@ -83,12 +80,8 @@ class Doxygen extends SourceTask {
      * <li>doxygen
      * <li>mscgen
      */
-    @CompileDynamic
     void executables(Closure cfg) {
-        Closure cl = cfg.clone()
-        cl.delegate = new Executables(paths,project)
-        cl.resolveStrategy = Closure.DELEGATE_FIRST
-        cl.call()
+        configureExecutables(cfg)
     }
 
     @Optional
@@ -201,8 +194,7 @@ class Doxygen extends SourceTask {
 
     /** Returns the current hashmap of Doxygen properties that will override settings in the Doxygen file
      */
-    @CompileDynamic
-    def getDoxygenProperties() {
+    Map<String,String> getDoxygenProperties() {
         doxyUpdate.properties.asImmutable()
     }
 
@@ -228,6 +220,10 @@ class Doxygen extends SourceTask {
         
         doxyUpdate.setProperty('INPUT', source)
         doxyUpdate.setProperty('OUTPUT_DIRECTORY', getOutputDir() )
+
+        if(doxyUpdate.properties['PROJECT_NUMBER'] == null) {
+            doxyUpdate.setProperty('PROJECT_NUMBER', project.version)
+        }
 
         def workaround = doxyUpdate
         paths.each { name,path ->
@@ -283,6 +279,14 @@ class Doxygen extends SourceTask {
             executable  executables.doxygen.call()
             args        cmdargs
         }
+    }
+
+    @CompileDynamic
+    private configureExecutables(Closure cfg) {
+        Closure cl = cfg.clone()
+        cl.delegate = new Executables(paths,project)
+        cl.resolveStrategy = Closure.DELEGATE_FIRST
+        cl.call()
     }
 
     private Map<String,Object> paths = [ doxygen: (Object){'doxygen'} ]

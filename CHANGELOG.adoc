@@ -4,6 +4,10 @@
 
 *TBC*
 
+== Version 0.3.2
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/11[#11] - Set version for default `doxygen` task.
+
 == Version 0.3.1
 
 * https://github.com/ysb33r/doxygen-gradle-plugin/issues/8[#8] - `NoSuchMethodError` when using own template with Gradle 3.5, 4.0.

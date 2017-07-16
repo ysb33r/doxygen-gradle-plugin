@@ -2,6 +2,8 @@
 
 apply plugin : 'org.ysb33r.doxygen'
 
+version = '1.999'
+
 ext {
     shared = file('shared')
     athena = file('athena')
@@ -51,9 +53,15 @@ doxygen {
             throw new GradleException("Documentation not found at ${html}")
         }
     }
+
+
 }
 
 task runGradleTest {
     dependsOn doxygen
+
+    doLast {
+        assert tasks.doxygen.doxygenProperties['PROJECT_NUMBER'] == project.version
+    }
 }
 
