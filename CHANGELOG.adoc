@@ -1,8 +1,8 @@
 = CHANGELOG
 
-== Version 0.4 - Roadmap
+== Version 0.4
 
-*TBC*
+* Upgradled to Grolifant 0.5.1.
 
 == Version 0.3.2
 
@@ -16,7 +16,7 @@
 
 === Breaking changes
 
-* `executables.doxygen` no longer will just accept a single string. It is now a map-based method. If you hard-coded paths to DOxygen installations before you will need to change it to read `doxygen path : '/path/to/doxygen'`.
+* `executables.doxygen` no longer will just accept a single string. It is now a map-based method. If you hard-coded paths to Doxygen installations before you will need to change it to read `doxygen path : '/path/to/doxygen'`.
 
 === Features
 
