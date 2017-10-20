@@ -167,7 +167,7 @@ license {
 }
 
 gradleTest {
-    versions '2.0', '2.5', '2.8', '2.13', '3.0', '3.2.1', '3.5', '4.0'
+    versions '2.0', '2.5', '2.8', '2.13', '3.0', '3.2.1', '3.5', '4.0', '4.2.1'
     systemProperties DOX_VERSION : doxygenTestVersions[0]
     systemProperties DOX_REPO : cacheDoxygenBinaries.destinationDir
     dependsOn cacheDoxygenBinaries
