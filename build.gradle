@@ -2,11 +2,11 @@ plugins {
     id 'groovy'
     id 'maven'
     id 'org.ysb33r.bintray' version '1.5'
-    id 'org.ysb33r.cloudci' version '1.0'
-    id 'org.ysb33r.gradletest' version '1.0-beta11'
+    id 'org.ysb33r.cloudci' version '2.2'
+    id 'org.ysb33r.gradletest' version '1.0'
     id 'com.jfrog.artifactory' version '3.0.1'
     id 'com.github.hierynomus.license' version '0.14.0'
-    id 'com.gradle.plugin-publish' version '0.9.4'
+    id 'com.gradle.plugin-publish' version '0.9.7'
 }
 
 apply from : 'gradle/download-tests.gradle'
@@ -16,7 +16,7 @@ import org.ysb33r.gradle.bintray.BintraySignVersion
 
 group = 'org.ysb33r.gradle'
 archivesBaseName = 'doxygen'
-version = '0.3.2'
+version = '0.4-SNAPSHOT'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
@@ -73,7 +73,7 @@ artifacts {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ysb33r.gradle:grolifant:0.1'
+    compile 'org.ysb33r.gradle:grolifant:0.5.1'
     testCompile ("org.spockframework:spock-core:1.0-groovy-${spockGroovyVer}") {
         exclude module : 'groovy-all'
     }
@@ -173,16 +173,19 @@ gradleTest {
     dependsOn cacheDoxygenBinaries
 }
 
-appveyor {
-    gradleTest {
-        maxParallelForks = 4
-    }
-}
+cloudci {
 
-travisci {
-    gradleTest {
-        maxParallelForks = 1
-    }
+  appveyor {
+      gradleTest {
+          maxParallelForks = 4
+      }
+  } 
+
+  travisci {
+      gradleTest {
+          maxParallelForks = 1
+      }
+  }
 }
 
 task release {

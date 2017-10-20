@@ -17,10 +17,10 @@ package org.ysb33r.gradle.doxygen.impl
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.Project
-import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.GradleVersion
-import org.ysb33r.gradle.olifant.AbstractDistributionInstaller
-import org.ysb33r.gradle.olifant.DistributionFailedException
+import org.ysb33r.grolifant.api.AbstractDistributionInstaller
+import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.errors.DistributionFailedException
 
 /** Downloads specific versions of Doxygen.
  * Curretnly limited to Linux, Windows & MacOS X on x86 32 + 64-bit architectures as these are the only ones for which

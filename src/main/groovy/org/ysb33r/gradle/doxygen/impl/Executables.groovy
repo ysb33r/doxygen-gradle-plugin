@@ -20,8 +20,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.util.CollectionUtils
-import org.ysb33r.gradle.olifant.StringUtils
-import org.ysb33r.gradle.olifant.UriUtils
+import org.ysb33r.grolifant.api.StringUtils
+import org.ysb33r.grolifant.api.UriUtils
 
 /**
  * Created by schalkc on 23/05/2014.
