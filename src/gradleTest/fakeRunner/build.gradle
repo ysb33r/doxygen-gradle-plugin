@@ -1,18 +1,29 @@
 import org.gradle.internal.os.OperatingSystem
 
-apply plugin : 'org.ysb33r.doxygen'
+apply plugin: 'org.ysb33r.doxygen'
 
 version = '1.999'
 
 doxygen {
     executables {
-        doxygen path : project.file('fake-doxygen' + OperatingSystem.current().isWindows() ? '.bat' : '.sh')
+        doxygen path: project.file("fake-doxygen${OperatingSystem.current().isWindows() ? '.bat' : '.sh'}")
     }
 
-    template 'Doxyfile'
+    source project.file('src/main/cpp')
+    template 'src/docs/doxygen/Doxyfile.template'
+
 }
 
 task runGradleTest {
     dependsOn doxygen
+}
 
+// Work around a bug in GradleTest (https://gitlab.com/ysb33rOrg/gradleTest/issues/76)
+if (!OperatingSystem.current().isWindows()) {
+    doxygen.doFirst {
+        def script = file('fake-doxygen.sh').toPath()
+        def perms = java.nio.file.Files.getPosixFilePermissions(script)
+        perms.add(java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE)
+        java.nio.file.Files.setPosixFilePermissions(script, perms)
+    }
 }

@@ -1,14 +1,15 @@
 = Doxygen Plugin for Gradle
-
-http://www.doxygen.[Doxygen] is a popular documentation tool, especially in the C/C++ world. This plugin makes
-it possible to generate documentation for any of the `Doxygen` supported languages, if such projects are built with
-http://www.gradle.org[Gradle]. There is an existing Doxygen extension for [Ant](http://ant.apache.org), which already 
-makes it possible for Gradle builds to utilise `Doxygen` via `AntBuilder`, however this plugin takes a much more 
+:toc: 1
+:doxygen: Doxygen
+http://www.doxygen.org[{doxygen}] is a popular documentation tool, especially in the C/C++ world. This plugin makes
+it possible to generate documentation for any of the {doxygen} supported languages, if such projects are built with
+http://www.gradle.org[Gradle]. There is an existing {doxygen} extension for [Ant](http://ant.apache.org), which already
+makes it possible for Gradle builds to utilise {doxygen} via `AntBuilder`, however this plugin takes a much more
 _gradlesque_ approach.
 
 == Requirements
-The plugin currently requires that the `doxygen` native binary be available. Any other optional binaries called by
-`doxygen` such as `dot` also needs to be installed if they are required as part of the documentation build process.
+The plugin currently requires that the `doxygen(.exe)` native binary be available. Any other optional binaries that are called
+such as `dot` also needs to be installed if they are required as part of the documentation build process.
 By default Gradle will use the search path to find these binaries, but it is possible to explicitly define locations
  if necessary,
  
@@ -43,7 +44,7 @@ doxygen {
 }
 ----
 
-It is also possible to to define custom Doxygen tasks
+It is also possible to to define custom {doxygen} tasks
 
 [source,groovy]
 ----
@@ -134,7 +135,7 @@ doxygen {
 }
 ----
 
-== Which Doxygen Executable?
+== Which {doxygen} Executable?
 
 By default the system path is searched for the `doxygen` executable. A specific path
 can be provided by using the `executables` closure
@@ -149,33 +150,33 @@ doxygen {
 ----
 
 As from v0.3 (for Linux, MacOSX & Windows) it is also possible to just specify the
-version and Doxygen will be bootstrapped & cached. This means it is possible to build
-documentation without the build script user having to actually install Doxygen !!
+version and {doxygen} will be bootstrapped & cached. This means it is possible to build
+documentation without the build script user having to actually install {doxygen} !!
 
-[source,groovy[
+[source,groovy]
 ----
 doxygen {
   executables {
-     doxygen version : '1.8.8'
+     doxygen version : '1.8.14'
   }
 }
 ----
 
 When using the above configuration it is also possible to configure the URI where
-to find Doxygen binaries as well as overriding where to install them.
+to find {doxygen} binaries as well as overriding where to install them.
 
 [source,groovy[
 ----
 doxygen {
   executables {
-     doxygen version : '1.8.8',
+     doxygen version : '1.8.14',
         baseURI : 'ftp://our.company/binaries', // <1>
         downloadRoot : project.file('/home/shared/doxygen') // <2>
   }
 }
 ----
 <1> Look for binaries at this URI. It will still use the default patterns as per
-  how the Doxygen project names t
+  how the {doxygen} project names are resolved.
 <2> Install the downloaded archives using this as the root directory.
 
 
