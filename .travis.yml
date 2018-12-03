@@ -1,9 +1,8 @@
 language: groovy
 script: ./gradlew clean build  --info --no-daemon
 jdk:
- - oraclejdk7
  - oraclejdk8
- - openjdk7
+# - openjdk11
 os:
  - linux
 env: TERM=dumb

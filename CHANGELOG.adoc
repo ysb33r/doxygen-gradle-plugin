@@ -1,5 +1,21 @@
 = CHANGELOG
 
+== Version 0.5
+
+=== Bugs
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/20[#20] - Use SourceForge site to download Doxygen binaries
+
+=== Breaking changes
+
+* Minimum required Gradle version is 3.0
+
+=== Other
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/15[#15] - Replace DMG unpack code with that in Grolifant 0.6
+* Upgradled to Grolifant 0.10
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/21[#21] - README corrections. (Thank you @albert-github).
+
 == Version 0.4
 
 * Upgradled to Grolifant 0.5.1.

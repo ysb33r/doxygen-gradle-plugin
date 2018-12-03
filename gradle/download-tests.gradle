@@ -58,7 +58,9 @@ sourceSets {
 
 task cacheDoxygenBinaries( type : Copy ) {
     doxygenTestVersions.each { ver ->
-        from configurations.getByName("downloadTestCache${ver}")
+        from configurations.getByName("downloadTestCache${ver}"), {
+            into "rel-${ver}"
+        }
     }
     into doxygenCacheDir
 }

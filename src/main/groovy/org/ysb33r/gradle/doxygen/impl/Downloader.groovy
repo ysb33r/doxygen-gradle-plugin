@@ -1,6 +1,6 @@
 //
 // ============================================================================
-// (C) Copyright Schalk W. Cronje 2013-2017
+// (C) Copyright Schalk W. Cronje 2013-2018
 //
 // This software is licensed under the Apache License 2.0
 // See http://www.apache.org/licenses/LICENSE-2.0 for license details
@@ -20,7 +20,10 @@ import org.gradle.api.Project
 import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.AbstractDistributionInstaller
 import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.UnpackUtils
 import org.ysb33r.grolifant.api.errors.DistributionFailedException
+
+import static org.ysb33r.grolifant.api.UnpackUtils.unpackDmgOnMacOsX
 
 /** Downloads specific versions of Doxygen.
  * Curretnly limited to Linux, Windows & MacOS X on x86 32 + 64-bit architectures as these are the only ones for which
@@ -30,7 +33,7 @@ import org.ysb33r.grolifant.api.errors.DistributionFailedException
 class Downloader extends AbstractDistributionInstaller {
     static final OperatingSystem OS = OperatingSystem.current()
 
-    String baseURI = 'ftp://ftp.stack.nl/pub/users/dimitri'
+    String baseURI = 'https://downloads.sourceforge.net/project/doxygen'
 
 
     Downloader(final String version,final Project project) {
@@ -44,17 +47,18 @@ class Downloader extends AbstractDistributionInstaller {
      */
     @Override
     URI uriFromVersion(final String ver) {
+        final String base = "${baseURI}/rel-${ver}"
         if(OS.isWindows()) {
             // Using GradleVersion as it has a handy version comparison
             if(GradleVersion.version(ver) >= GradleVersion.version('1.8.0') && System.getProperty('os.arch').contains('64')) {
-                "${baseURI}/doxygen-${ver}.windows.x64.bin.zip".toURI()
+                "${base}/doxygen-${ver}.windows.x64.bin.zip".toURI()
             } else {
-                "${baseURI}/doxygen-${ver}.windows.bin.zip".toURI()
+                "${base}/doxygen-${ver}.windows.bin.zip".toURI()
             }
         } else if(OS.isLinux()) {
-            "${baseURI}/doxygen-${ver}.linux.bin.tar.gz".toURI()
+            "${base}/doxygen-${ver}.linux.bin.tar.gz".toURI()
         } else if(OS.isMacOsX()) {
-            "${baseURI}/Doxygen-${ver}.dmg".toURI()
+            "${base}/Doxygen-${ver}.dmg".toURI()
         } else {
             null
         }
@@ -118,29 +122,7 @@ class Downloader extends AbstractDistributionInstaller {
 
     @CompileDynamic
     private void unpackDmgOnMacOsX(final File srcArchive, final File destDir) {
-        final File mountRoot = File.createTempDir('gradle_doxygen_tmp','$$$')
-        final File mountedPath = new File(mountRoot,srcArchive.name)
-        mountedPath.mkdirs()
-        getProject().exec {
-            executable 'hdiutil'
-            args 'attach', srcArchive.absolutePath, '-nobrowse', '-readonly'
-            args '-mountpoint', mountedPath.absolutePath
-        }
-        try {
-            getProject().copy {
-                from "${mountedPath}/Doxygen.app", {
-                    include '**'
-                }
-                into "${destDir}/Doxygen.app"
-            }
-        } finally {
-            getProject().exec() {
-                executable 'hdiutil'
-                args 'detach', mountedPath.absolutePath
-                ignoreExitValue = true
-            }
-            mountedPath.deleteDir()
-        }
+        unpackDmgOnMacOsX(project,'gradle_doxygen_tmp$$',srcArchive,'Doxygen.app',destDir)
     }
 }
 
