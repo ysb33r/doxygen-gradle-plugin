@@ -1,6 +1,8 @@
 = Doxygen Plugin for Gradle
 :toc: 1
-:doxygen: Doxygen
+:doxygen: doxygen
+
+
 http://www.doxygen.org[{doxygen}] is a popular documentation tool, especially in the C/C++ world. This plugin makes
 it possible to generate documentation for any of the {doxygen} supported languages, if such projects are built with
 http://www.gradle.org[Gradle]. There is an existing {doxygen} extension for [Ant](http://ant.apache.org), which already
@@ -8,9 +10,9 @@ makes it possible for Gradle builds to utilise {doxygen} via `AntBuilder`, howev
 _gradlesque_ approach.
 
 == Requirements
-The plugin currently requires that the `doxygen(.exe)` native binary be available. Any other optional binaries that are called
-such as `dot` also needs to be installed if they are required as part of the documentation build process.
-By default Gradle will use the search path to find these binaries, but it is possible to explicitly define locations
+The plugin currently requires that the `doxygen(.exe)` native binary is available. Any other optional binaries that are called
+such as `dot` also need to be installed if they are required as part of the documentation build process.
+By default Gradle will use the search path to find these binaries, but it is possible to explicitly define their locations
  if necessary,
  
 == Synopsis
@@ -44,7 +46,7 @@ doxygen {
 }
 ----
 
-It is also possible to to define custom {doxygen} tasks
+It is also possible to define a custom {doxygen} tasks
 
 [source,groovy]
 ----
@@ -79,7 +81,7 @@ doxygen {
 
 If no template is supplied, the build process will call `doxygen -g` to generate a default template.
 
-Output directory is set via `outputDir`. The default output directory, if not supplied, is `${buildDir}/docs/doxygen`.
+The output directory is set via `outputDir`. The default output directory, if not supplied, is `${buildDir}/docs/doxygen`.
 
 [source,groovy]
 ----
@@ -91,7 +93,7 @@ doxygen {
 NOTE: `output_directory` is an alias for `outputDir`.
 
 Most `Doxyfile` properties can be used in the configuration closure. By convention all `Doxyfile` properties are 
-in uppercase, but to keep it gradlesque, they must be lowercase in the configuration closure.
+in uppercase, but to keep it _gradlesque_, they must be in lowercase in the configuration closure.
 
 [source,groovy]
 ----
@@ -165,7 +167,7 @@ doxygen {
 When using the above configuration it is also possible to configure the URI where
 to find {doxygen} binaries as well as overriding where to install them.
 
-[source,groovy[
+[source,groovy]
 ----
 doxygen {
   executables {
@@ -181,7 +183,7 @@ doxygen {
 
 
 For backwards compatibility with 0.2 and 0.1 it is still possible to just
- specify
+ specify the path to the `doxygen` executable,
 
 [source,groovy]
 ----
@@ -192,4 +194,4 @@ doxygen {
 }
 ----
 
-This will result in a deprecation warning being printed.
+though this will result in a deprecation warning being printed.
