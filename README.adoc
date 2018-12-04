@@ -5,7 +5,7 @@
 
 http://www.doxygen.org[{doxygen}] is a popular documentation tool, especially in the C/C++ world. This plugin makes
 it possible to generate documentation for any of the {doxygen} supported languages, if such projects are built with
-http://www.gradle.org[Gradle]. There is an existing {doxygen} extension for [Ant](http://ant.apache.org), which already
+http://www.gradle.org[Gradle]. There is an existing {doxygen} extension for http://ant.apache.org[Ant], which already
 makes it possible for Gradle builds to utilise {doxygen} via `AntBuilder`, however this plugin takes a much more
 _gradlesque_ approach.
 
