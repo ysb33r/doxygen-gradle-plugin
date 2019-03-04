@@ -1,4 +1,5 @@
 plugins {
+    id 'com.gradle.build-scan' version '1.16'
     id 'groovy'
     id 'maven'
     id 'org.ysb33r.bintray' version '1.5'
@@ -7,6 +8,11 @@ plugins {
     id 'com.jfrog.artifactory' version '3.0.1'
     id 'com.github.hierynomus.license' version '0.14.0'
     id 'com.gradle.plugin-publish' version '0.9.7'
+}
+
+buildScan {
+    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 apply from : 'gradle/download-tests.gradle'
