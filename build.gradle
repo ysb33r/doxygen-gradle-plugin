@@ -178,7 +178,8 @@ license {
         '**/*.adoc', '**/*.md',
         '**/*.properties',
         '**/*.dox',
-        '**/*CompatibilitySpec.groovy'
+        '**/*dsl.groovySpec.groovy',
+        '**/*dsl.kotlinSpec.groovy'
     ])
 }
 
