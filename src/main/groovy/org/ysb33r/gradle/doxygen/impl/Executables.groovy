@@ -29,14 +29,14 @@ import org.ysb33r.grolifant.api.UriUtils
 @CompileStatic
 class Executables {
 
-    static final Map<String,String> EXECUTABLES = [
-            'mscgen'  : 'MSCGEN_PATH',
-            'dot'     : 'DOT_PATH',
-            'perl'    : 'PERL_PATH',
-            'hhc'     : 'HHC_LOCATION'
+    static final Map<String, String> EXECUTABLES = [
+        'mscgen': 'MSCGEN_PATH',
+        'dot'   : 'DOT_PATH',
+        'perl'  : 'PERL_PATH',
+        'hhc'   : 'HHC_LOCATION'
     ]
 
-    Executables(Map<String,Object> map, Project project ) {
+    Executables(Map<String, Object> map, Project project) {
         final OperatingSystem OS = OperatingSystem.current()
         this.mapToUpdate = map
         this.project = project
@@ -57,22 +57,22 @@ class Executables {
      *
      * @since 0.3
      */
-    void doxygen(final Map<String,Object> param) {
+    void doxygen(final Map<String, Object> param) {
 
-        if(param.containsKey('version') && param.containsKey('path')) {
+        if (param.containsKey('version') && param.containsKey('path')) {
             throw new GradleException("Cannot use both 'version' and 'path' keywords for setting Doxygen executable")
         }
 
-        if(param.containsKey('version')) {
-            if(versionSupportedOnOS) {
+        if (param.containsKey('version')) {
+            if (versionSupportedOnOS) {
                 mapToUpdate['doxygen'] = {
                     Downloader dwnl = new Downloader(StringUtils.stringize(param['version']), project)
 
-                    if(param.containsKey('baseURI')) {
+                    if (param.containsKey('baseURI')) {
                         dwnl.baseURI = UriUtils.urize(param['baseURI'])
                     }
 
-                    if(param.containsKey('downloadRoot')) {
+                    if (param.containsKey('downloadRoot')) {
                         dwnl.downloadRoot = project.file(param['downloadRoot'])
                     }
 
@@ -83,16 +83,16 @@ class Executables {
             }
         }
 
-        if(param.containsKey('path')) {
-            mapToUpdate['doxygen'] = {CollectionUtils.stringize([param['path']])[0]}
+        if (param.containsKey('path')) {
+            mapToUpdate['doxygen'] = { CollectionUtils.stringize([param['path']])[0] }
         }
 
     }
 
     @CompileDynamic
-    def methodMissing( String name, args ) {
+    def methodMissing(String name, args) {
 
-        if( args.size() == 1 && EXECUTABLES[name] != null ) {
+        if (args.size() == 1 && EXECUTABLES[name] != null) {
             switch (args[0]) {
                 case File:
                     return mapToUpdate[name] = args[0].absolutePath
@@ -101,10 +101,10 @@ class Executables {
             }
         }
 
-        throw new MissingMethodException(name,Executables.class,args)
+        throw new MissingMethodException(name, Executables.class, args)
     }
 
-    private Map<String,Object> mapToUpdate
+    private Map<String, Object> mapToUpdate
     private Project project
     private final boolean versionSupportedOnOS
 

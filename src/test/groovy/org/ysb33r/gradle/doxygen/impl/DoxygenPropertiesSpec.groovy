@@ -27,18 +27,18 @@ class DoxygenPropertiesSpec extends Specification {
 
     def "Setting a boolean to false creates a prop with 'NO' value"() {
         when:
-            dox.setProperty('CREATE_SUBDIRS',false)
+        dox.setProperty('CREATE_SUBDIRS', false)
 
         then:
-            dox.properties.CREATE_SUBDIRS == 'NO'
+        dox.properties.CREATE_SUBDIRS == 'NO'
     }
 
     def "Setting a boolean to true creates a prop with 'YES' value"() {
         when:
-            dox.setProperty('CREATE_SUBDIRS',true)
+        dox.setProperty('CREATE_SUBDIRS', true)
 
         then:
-            dox.properties.CREATE_SUBDIRS == 'YES'
+        dox.properties.CREATE_SUBDIRS == 'YES'
     }
 
     @Ignore

@@ -28,7 +28,7 @@ class DoxygenTemplateFiles extends DefaultTask {
      *
      */
     @Input
-    File location = new File(project.projectDir,'src/doxygen')
+    File location = new File(project.projectDir, 'src/doxygen')
 
     /** Prefix used for naming files. By default it is the name of the project.
      *
@@ -44,15 +44,15 @@ class DoxygenTemplateFiles extends DefaultTask {
 
     @TaskAction
     void exec() {
-        runDoxygen '-l', new File(location,prefix+'LayoutTemplate.xml').absolutePath
-        runDoxygen '-w', 'rtf', new File(location,prefix+'Style.rtf').absolutePath
-        runDoxygen '-w', 'html', new File(location,prefix+'Header.html').absolutePath,
-                new File(location,prefix+'Footer.html').absolutePath,
-                new File(location,prefix+'.css').absolutePath
-        runDoxygen '-w', 'latex', new File(location,prefix+'Header.tex').absolutePath,
-                new File(location,prefix+'Footer.tex').absolutePath,
-                new File(location,prefix+'Style.tex').absolutePath
-        runDoxygen '-e', 'rtf', new File(location,prefix+'Extensions.rtf').absolutePath
+        runDoxygen '-l', new File(location, prefix + 'LayoutTemplate.xml').absolutePath
+        runDoxygen '-w', 'rtf', new File(location, prefix + 'Style.rtf').absolutePath
+        runDoxygen '-w', 'html', new File(location, prefix + 'Header.html').absolutePath,
+            new File(location, prefix + 'Footer.html').absolutePath,
+            new File(location, prefix + '.css').absolutePath
+        runDoxygen '-w', 'latex', new File(location, prefix + 'Header.tex').absolutePath,
+            new File(location, prefix + 'Footer.tex').absolutePath,
+            new File(location, prefix + 'Style.tex').absolutePath
+        runDoxygen '-e', 'rtf', new File(location, prefix + 'Extensions.rtf').absolutePath
     }
 
     /** Runs the Doxygen executable
@@ -64,8 +64,8 @@ class DoxygenTemplateFiles extends DefaultTask {
         cmdargs.add(doxyfile.absolutePath)
         ExecResult execResult = project.exec {
 
-            executable  doxygen
-            args        cmdargs
+            executable doxygen
+            args cmdargs
         }
     }
 }

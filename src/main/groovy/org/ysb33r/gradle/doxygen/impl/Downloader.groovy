@@ -20,7 +20,6 @@ import org.gradle.api.Project
 import org.gradle.util.GradleVersion
 import org.ysb33r.grolifant.api.AbstractDistributionInstaller
 import org.ysb33r.grolifant.api.OperatingSystem
-import org.ysb33r.grolifant.api.UnpackUtils
 import org.ysb33r.grolifant.api.errors.DistributionFailedException
 
 import static org.ysb33r.grolifant.api.UnpackUtils.unpackDmgOnMacOsX
@@ -36,8 +35,8 @@ class Downloader extends AbstractDistributionInstaller {
     String baseURI = 'https://downloads.sourceforge.net/project/doxygen'
 
 
-    Downloader(final String version,final Project project) {
-        super('doxygen',version,'native-binaries/doxygen',project)
+    Downloader(final String version, final Project project) {
+        super('doxygen', version, 'native-binaries/doxygen', project)
     }
 
     /** Provides an appropriate URI to download a specific verson of Doxygen.
@@ -48,16 +47,16 @@ class Downloader extends AbstractDistributionInstaller {
     @Override
     URI uriFromVersion(final String ver) {
         final String base = "${baseURI}/rel-${ver}"
-        if(OS.isWindows()) {
+        if (OS.isWindows()) {
             // Using GradleVersion as it has a handy version comparison
-            if(GradleVersion.version(ver) >= GradleVersion.version('1.8.0') && System.getProperty('os.arch').contains('64')) {
+            if (GradleVersion.version(ver) >= GradleVersion.version('1.8.0') && System.getProperty('os.arch').contains('64')) {
                 "${base}/doxygen-${ver}.windows.x64.bin.zip".toURI()
             } else {
                 "${base}/doxygen-${ver}.windows.bin.zip".toURI()
             }
-        } else if(OS.isLinux()) {
+        } else if (OS.isLinux()) {
             "${base}/doxygen-${ver}.linux.bin.tar.gz".toURI()
-        } else if(OS.isMacOsX()) {
+        } else if (OS.isMacOsX()) {
             "${base}/Doxygen-${ver}.dmg".toURI()
         } else {
             null
@@ -75,8 +74,8 @@ class Downloader extends AbstractDistributionInstaller {
      */
     @Override
     protected File getAndVerifyDistributionRoot(File distDir, String distributionDescription) {
-        if(OS.windows) {
-            if (!new File(distDir,'doxygen.exe').exists()) {
+        if (OS.windows) {
+            if (!new File(distDir, 'doxygen.exe').exists()) {
                 throw new DistributionFailedException("Doxygen '${distributionDescription}' does not contain 'doxygen.exe'.")
             }
             return distDir
@@ -91,12 +90,12 @@ class Downloader extends AbstractDistributionInstaller {
      * @return Location of {@code doxygen} or null if not a supported operating system.
      */
     File getDoxygenExecutablePath() {
-        if(OS.isWindows()) {
-            new File(distributionRoot,'doxygen.exe')
-        } else if(OS.isLinux()) {
-            new File(distributionRoot,'bin/doxygen')
-        } else if(OS.isMacOsX()) {
-            new File(distributionRoot,'Contents/Resources/doxygen')
+        if (OS.isWindows()) {
+            new File(distributionRoot, 'doxygen.exe')
+        } else if (OS.isLinux()) {
+            new File(distributionRoot, 'bin/doxygen')
+        } else if (OS.isMacOsX()) {
+            new File(distributionRoot, 'Contents/Resources/doxygen')
         } else {
             null
         }
@@ -113,16 +112,16 @@ class Downloader extends AbstractDistributionInstaller {
     @Override
     protected void unpack(final File srcArchive, final File destDir) {
 
-        if(OS.macOsX && srcArchive.name.endsWith('.dmg')) {
-            unpackDmgOnMacOsX(srcArchive,destDir)
+        if (OS.macOsX && srcArchive.name.endsWith('.dmg')) {
+            unpackDmgOnMacOsX(srcArchive, destDir)
         } else {
-            super.unpack(srcArchive,destDir)
+            super.unpack(srcArchive, destDir)
         }
     }
 
     @CompileDynamic
     private void unpackDmgOnMacOsX(final File srcArchive, final File destDir) {
-        unpackDmgOnMacOsX(project,'gradle_doxygen_tmp$$',srcArchive,'Doxygen.app',destDir)
+        unpackDmgOnMacOsX(project, 'gradle_doxygen_tmp$$', srcArchive, 'Doxygen.app', destDir)
     }
 }
 
