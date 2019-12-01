@@ -155,10 +155,15 @@ class Doxygen extends SourceTask {
     def methodMissing(String name, args) {
 
         switch (name) {
+            case 'aliases':
+            case 'allexternals':
+            case 'exclude':
+            case 'predefined':
             case 'quiet':
-            case 'warnings':
-            case 'subgrouping':
             case 'recursive':
+            case 'searchengine':
+            case 'subgrouping':
+            case 'warnings':
                 doxyUpdate.setProperty(name, args[0])
                 break
 

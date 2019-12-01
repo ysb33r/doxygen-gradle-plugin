@@ -47,6 +47,15 @@ repositories {
             artifact 'rel-[revision]/[artifact]-[revision].[ext]'
         }
     }
+
+    ivy {
+        name 'Downloader for Doxygen distributions'
+        url 'https://downloads.sourceforge.net/project/doxygen'
+        resolve.dynamicMode = false
+        layout 'pattern', {
+            artifact 'rel-[revision]/[artifact]-[revision].[ext]'
+        }
+    }
 }
 
 jar {

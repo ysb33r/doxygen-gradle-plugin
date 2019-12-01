@@ -80,6 +80,8 @@ class DoxygenExecutableSpec extends DownloadTestSpecification {
             generate_html true
             have_dot false
 
+            aliases 'ChangeLog=\\xrefitem ChangeLogs \"ChangeLog\" \"ChangeLogs\" '
+
             executables {
                 dot OS.windows ? 'C:/path/to/dot' : '/path/to/dot'
             }
