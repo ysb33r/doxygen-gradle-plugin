@@ -38,16 +38,16 @@ class DoxyfileEditor {
      * @param doxyfile File to be edited
      * @param updates Properties to be edited in file
      */
-    void update( def updates = [:], final File doxyfile ) {
+    void update(def updates = [:], final File doxyfile) {
 
-        if( !updates.size() ) {
+        if (!updates.size()) {
             return
         }
 
         // Read all lines
         Map properties = readProperties(doxyfile)
-        updates.each { name,value ->
-            if(properties[name] == null) {
+        updates.each { name, value ->
+            if (properties[name] == null) {
                 logger.warn "Ignoring '${name}' as it has not been found in the Doxyfile template"
             } else {
                 properties[name] = value
@@ -55,7 +55,7 @@ class DoxyfileEditor {
         }
 
         doxyfile.withPrintWriter { w ->
-            properties.each { name,value ->
+            properties.each { name, value ->
                 w.println "${name} = ${value}"
             }
         }
@@ -66,27 +66,27 @@ class DoxyfileEditor {
      * @param doxyfile - File to be parsed
      * @return A map of properties
      */
-    private Map readProperties( final File doxyfile ) {
+    private Map readProperties(final File doxyfile) {
         Map result = [:]
         Integer lineCount
         boolean continuation = false
         String last
-        doxyfile.eachLine { line,count ->
+        doxyfile.eachLine { line, count ->
             if (continuation) {
-                continuation=line.endsWith('\\')
-                result[last]+= " ${trimContinuationMarker(line)}"
+                continuation = line.endsWith('\\')
+                result[last] += " ${trimContinuationMarker(line)}"
             } else {
-                if( !( line.size() == 0 || line.startsWith('#') || line.matches(/^\s+$/)) ) {
+                if (!(line.size() == 0 || line.startsWith('#') || line.matches(/^\s+$/))) {
                     Matcher matches = line =~ /^\s*([\p{Upper}\p{Digit}_]{3,})\s*(\+?\=)\s*(.*)$/
 
-                    if(!matches || matches[0].size() != 4) {
+                    if (!matches || matches[0].size() != 4) {
                         throw new DoxygenException("Doxyfile parsing error ${doxyfile.absolutePath}:${count}")
                     }
 
-                    continuation=line.endsWith('\\')
-                    if(matches[0][2] == '+=' && result[matches[0][1]]) {
+                    continuation = line.endsWith('\\')
+                    if (matches[0][2] == '+=' && result[matches[0][1]]) {
                         last = matches[0][1]
-                        result[last]+= " ${trimContinuationMarker(matches[0][3])}"
+                        result[last] += " ${trimContinuationMarker(matches[0][3])}"
                     } else {
                         last = matches[0][1]
                         result[last] = trimContinuationMarker(matches[0][3])
@@ -100,10 +100,10 @@ class DoxyfileEditor {
 
     @CompileStatic
     private String trimContinuationMarker(final String line) {
-        if(line.endsWith('\\')) {
-            if(line.size() == 1) {
+        if (line.endsWith('\\')) {
+            if (line.size() == 1) {
                 return ''
-            } else if(line.size() == 2) {
+            } else if (line.size() == 2) {
                 return line[0]
             } else {
                 return line[0..-2]

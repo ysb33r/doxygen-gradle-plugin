@@ -16,14 +16,11 @@ package org.ysb33r.gradle.doxygen
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.SourceTask
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecResult
 import org.ysb33r.gradle.doxygen.impl.DoxyfileEditor
 import org.ysb33r.gradle.doxygen.impl.DoxygenProperties
@@ -120,7 +117,7 @@ class Doxygen extends SourceTask {
             File fName
             switch (it) {
                 case File:
-                    fName = (File)it
+                    fName = (File) it
                     break
                 default:
                     fName = new File(it.toString())
@@ -158,10 +155,15 @@ class Doxygen extends SourceTask {
     def methodMissing(String name, args) {
 
         switch (name) {
+            case 'aliases':
+            case 'allexternals':
+            case 'exclude':
+            case 'predefined':
             case 'quiet':
-            case 'warnings':
-            case 'subgrouping':
             case 'recursive':
+            case 'searchengine':
+            case 'subgrouping':
+            case 'warnings':
                 doxyUpdate.setProperty(name, args[0])
                 break
 
@@ -194,7 +196,7 @@ class Doxygen extends SourceTask {
 
     /** Returns the current hashmap of Doxygen properties that will override settings in the Doxygen file
      */
-    Map<String,String> getDoxygenProperties() {
+    Map<String, String> getDoxygenProperties() {
         doxyUpdate.properties.asImmutable()
     }
 
@@ -209,7 +211,7 @@ class Doxygen extends SourceTask {
             doxyUpdate.setProperty('IMAGE_PATH', imagePaths as File[])
         }
 
-        if(source.files.empty) {
+        if (source.files.empty) {
             source 'src/main/cpp',
                 'src/main/headers',
                 'src/main/asm',
@@ -217,18 +219,18 @@ class Doxygen extends SourceTask {
                 'src/main/objectiveCpp',
                 'src/main/c'
         }
-        
-        doxyUpdate.setProperty('INPUT', source)
-        doxyUpdate.setProperty('OUTPUT_DIRECTORY', getOutputDir() )
 
-        if(doxyUpdate.properties['PROJECT_NUMBER'] == null) {
+        doxyUpdate.setProperty('INPUT', source)
+        doxyUpdate.setProperty('OUTPUT_DIRECTORY', getOutputDir())
+
+        if (doxyUpdate.properties['PROJECT_NUMBER'] == null) {
             doxyUpdate.setProperty('PROJECT_NUMBER', project.version)
         }
 
         def workaround = doxyUpdate
-        paths.each { name,path ->
-            if( name != 'doxygen' ) {
-                workaround.setProperty(Executables.EXECUTABLES[name],project.file(path))
+        paths.each { name, path ->
+            if (name != 'doxygen') {
+                workaround.setProperty(Executables.EXECUTABLES[name], project.file(path))
             }
         }
     }
@@ -241,7 +243,7 @@ class Doxygen extends SourceTask {
      */
     private File createDoxyfile() {
         File doxyfile = new File(project.buildDir, "tmp/${project.name}.doxyfile")
-        if(!doxyfile.parentFile.exists()) {
+        if (!doxyfile.parentFile.exists()) {
             doxyfile.parentFile.mkdirs()
         }
         if (templateFile) {
@@ -276,20 +278,20 @@ class Doxygen extends SourceTask {
 
         cmdargs.add(doxyfile.absolutePath)
         ExecResult execResult = project.exec {
-            executable  executables.doxygen.call()
-            args        cmdargs
+            executable executables.doxygen.call()
+            args cmdargs
         }
     }
 
     @CompileDynamic
     private configureExecutables(Closure cfg) {
         Closure cl = cfg.clone()
-        cl.delegate = new Executables(paths,project)
+        cl.delegate = new Executables(paths, project)
         cl.resolveStrategy = Closure.DELEGATE_FIRST
         cl.call()
     }
 
-    private Map<String,Object> paths = [ doxygen: (Object){'doxygen'} ]
+    private Map<String, Object> paths = [doxygen: (Object) { 'doxygen' }]
     private File templateFile = null
     private DoxygenProperties doxyUpdate = new DoxygenProperties()
     private List<File> imagePaths = []

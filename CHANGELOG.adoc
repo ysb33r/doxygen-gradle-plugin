@@ -1,5 +1,12 @@
 = CHANGELOG
 
+== Version 0.6
+
+=== Bugs
+
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/17[#17] - `ALIASES` property.
+* https://github.com/ysb33r/doxygen-gradle-plugin/issues/25[#25] - NoSuchMethodError: `org.gradle.api.internal.TaskInputsInternal.dir` with Gradle 6.0.1
+
 == Version 0.5
 
 === Bugs

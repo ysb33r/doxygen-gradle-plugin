@@ -22,14 +22,14 @@ class DoxygenPluginSpec extends spock.lang.Specification {
     Project project = ProjectBuilder.builder().build()
 
     void setup() {
-        project.apply plugin:'org.ysb33r.doxygen'
+        project.apply plugin: 'org.ysb33r.doxygen'
     }
-    
+
     def "Can apply Doxygen plugin to project"() {
 
         expect:
-            project.tasks.doxygen != null
-            project.tasks.createDoxygenTemplates != null
+        project.tasks.doxygen != null
+        project.tasks.createDoxygenTemplates != null
     }
 
 }
